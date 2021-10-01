@@ -1,7 +1,7 @@
 {
     "QUERY": [
         2,
-        "IPPVKBKXWXKHSAPHVXXVOJMRAKKPJVLLJBWKOLLJKXHGXLLCPAJOBKPGXBATGXMPOMCVZTAXVPAGKXGOMJQOLJGWGKXLQ"
+        "KJXXJAJKPXKJJXJKPXKJXXJAJKPXKJJXJKPXKJXXJAJKPXKJXXJAJKHXKJXXJAJKPXKJXXJAJKHXKJXX"
     ],
     "DATASET": {
         "DATA_DIR": "../data/"
@@ -10,15 +10,15 @@
         "DIR":"../result"
     },
     "GA": {
-        "PPL": 3000,
-        "NEXT_GEN": 3000,
+        "PPL": 100,
+        "NEXT_GEN": 100,
         "MAX_GEN":100,
         "CROSSOVER": {
             "MODE": 2,
-            "PROB":0.6
+            "PROB": 0.8
         },
         "MUTATION": {
-            "PROB": 0.4
+            "PROB": 0.2
         }
     }
 }

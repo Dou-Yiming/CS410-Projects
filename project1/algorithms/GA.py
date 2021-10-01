@@ -1,25 +1,21 @@
 import random
-from random import randint as rint
+from random import randint as rint, randrange
 import json
 import math
 import numpy as np
 from tqdm import tqdm
 import os
 import os.path as osp
+import time
 
 
 class Gene:
     def __init__(self, traits):
-        """
-        data: the data we use to compute the fittness
-        gene: the gene list
-        length: length of gene
-        fittness: fittness of this individual
-        """
         self.traits = traits
         self.gene = self.traits2gene(traits)
         self.length = len(self.gene)
         self.fittness = None
+        self.res = {}
 
     def __lt__(self, other):
         return self.fittness < other.fittness
@@ -35,9 +31,19 @@ class GA:
     def __init__(self, cfg=None, loader=None, cost_func=None):
         self.loader = loader
         self.cfg = cfg
+        self.mode = self.cfg.QUERY[0]  # 2: pairwise; 3: 3-seq
         self.cost_func = cost_func
+        self.res = None
+        self.time_start = None
+        self.time_end = None
         self.init_ppl()
-        self.min_cost = math.inf
+
+    def add_bar(self, seq, traits):
+        # add '-'s in the seq
+        seq = list(seq)
+        for i in range(len(traits)):
+            seq.insert(traits[i] + i, '-')
+        return ''.join(seq)
 
     def init_ppl(self):
         trait_ppl = []
@@ -60,24 +66,33 @@ class GA:
     def eval_ppl(self):
         print("Evaluating population...")
         trait_ppl = [self.gene2traits(g.gene) for g in self.gene_ppl]
-        for i in range(len(self.gene_ppl)):  # for evry individual
-            individual_cost = []
-            # query
-            q = self.loader.query[1]
-            q = list(q)
-            for j in range(len(trait_ppl[i][0])):
-                q.insert(trait_ppl[i][0][j] + j, '-')
-            q = ''.join(q)
-            # database
-            for j in range(len(self.loader.database)):  # for every seq
-                s = self.loader.database[j]
-                s = list(s)
-                for k in range(len(trait_ppl[i][j + 1])):  # every pos
-                    s.insert(trait_ppl[i][j + 1][k] + k, '-')
-                s = ''.join(s)
-                individual_cost.append(self.cost_func(q, s))
-            self.gene_ppl[i].fittness = max([1000/(cost + 1e-8)  # avoid divide by 0
-                                             for cost in individual_cost])
+        if self.mode == 2:
+            for i in range(len(self.gene_ppl)):  # for evry individual
+                individual_cost = []
+                # query
+                q = self.add_bar(self.loader.query[1], trait_ppl[i][0])
+                # database
+                for j in range(len(self.loader.database)):  # for every seq
+                    s = self.add_bar(
+                        self.loader.database[j], trait_ppl[i][j + 1])
+                    individual_cost.append(self.cost_func(q, s))
+                self.gene_ppl[i].fittness = max([1000/(cost + 1e-8)  # avoid divide by 0
+                                                 for cost in individual_cost])
+        elif self.mode == 3:
+            for i in range(len(self.gene_ppl)):  # for evry individual
+                individual_cost = []
+                # query
+                q = self.add_bar(self.loader.query[1], trait_ppl[i][0])
+                for j in range(len(self.loader.database)):
+                    for k in range(j+1, len(self.loader.database)):
+                        s1 = self.add_bar(
+                            self.loader.database[j], trait_ppl[i][j + 1])
+                        s2 = self.add_bar(
+                            self.loader.database[k], trait_ppl[i][k + 1])
+                        individual_cost.append(self.cost_func(
+                            q, s1)+self.cost_func(q, s2)+self.cost_func(s1, s2))
+                self.gene_ppl[i].fittness = max([1000/(cost + 1e-8)  # avoid divide by 0
+                                                 for cost in individual_cost])
 
     def crossover(self, gene_pair):
         """
@@ -108,7 +123,7 @@ class GA:
             gene_new1), self.gene2traits(gene_new2)
         return [Gene(data_new1), Gene(data_new2)]
 
-    def mutation(self, gene: Gene):
+    def mutation(self, gene):
         """
         This function randomly changes one element in gene
         bound: the pair of lower and upper bound of mutation element
@@ -152,25 +167,54 @@ class GA:
         Computes the cost of currently best individual
         """
         ans = {}
+        ans['mode'] = 'pairwise' if self.mode == 2 else '3-seq'
         best_traits = self.gene2traits(self.select_best().gene)
-        ans['cost'] = math.inf
-        q = self.loader.query[1]
-        q = list(q)
-        for j in range(len(best_traits[0])):
-            q.insert(best_traits[0][j] + j, '-')
-        q = ''.join(q)
-        for j in range(len(self.loader.database)):  # for every seq
-            s = self.loader.database[j]
-            s = list(s)
-            for k in range(len(best_traits[j + 1])):  # every pos
-                s.insert(best_traits[j + 1][k] + k, '-')
-            s = ''.join(s)
-            cur_cost = self.cost_func(q, s)
-            if cur_cost < ans['cost']:
-                ans['cost'] = cur_cost
-                ans['query'] = q
-                ans['value'] = s
+        ans['cost'] = [math.inf]
+        q = self.add_bar(self.loader.query[1], best_traits[0])
+        if self.mode == 2:
+            for j in range(len(self.loader.database)):  # for every seq
+                s = self.add_bar(self.loader.database[j], best_traits[j + 1])
+                cur_cost = self.cost_func(q, s)
+                if cur_cost < ans['cost'][0]:
+                    ans['cost'] = [cur_cost]
+                    ans['query'] = [q]
+                    ans['value'] = [s]
+        elif self.mode == 3:
+            for j in range(len(self.loader.database)):
+                for k in range(j+1, len(self.loader.database)):
+                    s1 = self.add_bar(
+                        self.loader.database[j], best_traits[j + 1])
+                    s2 = self.add_bar(
+                        self.loader.database[k], best_traits[k + 1])
+                    cur_cost = self.cost_func(
+                        q, s1)+self.cost_func(q, s2)+self.cost_func(s1, s2)
+                    if cur_cost < ans['cost'][0]:
+                        ans['cost'] = [cur_cost]
+                        ans['query'] = [q]
+                        ans['value1'] = [s1]
+                        ans['value2'] = [s2]
         return ans
+
+    def add_res(self, cur_res, gen):
+        # add new result
+        if self.res == None:
+            self.res = cur_res
+            self.time_end = time.time()
+            self.res['gen'] = [gen]
+            self.res['run_time'] = ["{:.4f} sec".format(
+                self.time_end-self.time_start)]
+        if cur_res['cost'][0] < self.res['cost'][-1]:  # Better solution
+            self.time_end = time.time()
+            self.res['cost'].extend(cur_res['cost'])
+            self.res['query'].extend(cur_res['query'])
+            if self.mode == 2:
+                self.res['value'].extend(cur_res['value'])
+            else:
+                self.res['value1'].extend(cur_res['value1'])
+                self.res['value2'].extend(cur_res['value2'])
+            self.res['gen'].append(gen)
+            self.res['run_time'].append(
+                "{:.4f} sec".format(self.time_end-self.time_start))
 
     def optimize(self):
         """
@@ -178,16 +222,16 @@ class GA:
         Selects a group and generates new generation
         """
         print("Optimization starts!")
+        self.time_start = time.time()
         for gen in tqdm(range(self.cfg.GA.MAX_GEN)):
             self.eval_ppl()
             print('Generation: {}'.format(gen))
-            res = self.cost_best()
-            if res['cost']<self.min_cost:# Better solution
-                self.min_cost=res['cost']
-                res['gen']=gen
-                json.dump(res,open(osp.join(self.cfg.RESULT.DIR,\
-                    'GA_PPL{}.json'.format(self.cfg.GA.PPL)),'w'))
-            print("min_cost: {}".format(self.min_cost))
+            cur_res = self.cost_best()
+            self.add_res(cur_res, gen)
+            json.dump(self.res, open(osp.join(self.cfg.RESULT.DIR,
+                                              'GA_PPL{}_{}.json'.format(self.cfg.GA.PPL,
+                                                                        self.res['mode'])), 'w'))
+            print("min_cost: {}".format(self.res['cost'][-1]))
             chosen = self.selection()
             next_gen = []
             while len(next_gen) < self.cfg.GA.NEXT_GEN:

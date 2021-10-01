@@ -3,7 +3,6 @@ import json
 from easydict import EasyDict as edict
 from tqdm import tqdm
 sys.path.append("..")
-print(sys.path)
 
 from tools.dataset import Data_loader
 from algorithms.GA import GA
