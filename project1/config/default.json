@@ -1,0 +1,24 @@
+{
+    "QUERY": [
+        2,
+        "IPPVKBKXWXKHSAPHVXXVOJMRAKKPJVLLJBWKOLLJKXHGXLLCPAJOBKPGXBATGXMPOMCVZTAXVPAGKXGOMJQOLJGWGKXLQ"
+    ],
+    "DATASET": {
+        "DATA_DIR": "../data/"
+    },
+    "RESULT":{
+        "DIR":"../result"
+    },
+    "GA": {
+        "PPL": 3000,
+        "NEXT_GEN": 3000,
+        "MAX_GEN":100,
+        "CROSSOVER": {
+            "MODE": 2,
+            "PROB":0.6
+        },
+        "MUTATION": {
+            "PROB": 0.4
+        }
+    }
+}
