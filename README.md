@@ -34,4 +34,5 @@ TODOs:
 - [ ] A-star
 - [x] DP
     - [x] 3-seq alignment有bug
+    - [ ] 耗时有点离谱，要优化一下
 
