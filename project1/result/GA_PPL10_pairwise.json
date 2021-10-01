@@ -1,8 +1,1 @@
-{
-    "mode": "pairwise",
-    "cost": 202,
-    "query": "--KJX-XJA--JK--PXKJ--J-XJK-P-X--KJXXJAJKPX-KJJ-XJ-K-PXK-JXXJA--J--K-P--XKJXX-JAJ-K-H-XK-J-XXJ-A-J-KPX--KJ-X-XJAJKH-XKJXX",
-    "value": "-FW---KPHP-JT--JJ---PJ-APPJ--J----H-K-J-PK-P-J--J--PP-J-A-PP-JJJP-K-JJ-KKJ--JPP----A-JJ-H--P-J-J-PP-AJ-JP--POJK-P-J--J-J",
-    "gen": 0,
-    "run_time": "0.0243 sec"
-}
+{"mode": "pairwise", "cost": [12, 8, 5], "query": ["--------a-------------b--------c", "--------a-------------b--------c", "-----------a-----b-------------c"], "value": ["-------a--------b-----c--------d", "--------a-------b-----c--------d", "-----------a-----b----c--------d"], "gen": [0, 1, 2], "run_time": ["0.0163 sec", "0.0868 sec", "0.1874 sec"]}

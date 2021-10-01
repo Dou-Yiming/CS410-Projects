@@ -28,5 +28,10 @@ log:
 
 TODOs:
 
-- [x] 3-seq alignment
-- [ ] add timer
+- [x] GA:
+    - [x] 3-seq alignment
+    - [x] add timer
+- [ ] A-star
+- [x] DP
+    - [x] 3-seq alignment有bug
+

@@ -1,13 +1,11 @@
 import random
-from random import randint as rint, randrange
+from random import randint as rint
 import json
 import math
 import numpy as np
 from tqdm import tqdm
-import os
 import os.path as osp
 import time
-
 
 class Gene:
     def __init__(self, traits):
@@ -26,16 +24,14 @@ class Gene:
             gene += t
         return gene
 
-
 class GA:
     def __init__(self, cfg=None, loader=None, cost_func=None):
+        self.time_start = time.time()
         self.loader = loader
         self.cfg = cfg
         self.mode = self.cfg.QUERY[0]  # 2: pairwise; 3: 3-seq
         self.cost_func = cost_func
         self.res = None
-        self.time_start = None
-        self.time_end = None
         self.init_ppl()
 
     def add_bar(self, seq, traits):
@@ -64,7 +60,6 @@ class GA:
         return traits
 
     def eval_ppl(self):
-        print("Evaluating population...")
         trait_ppl = [self.gene2traits(g.gene) for g in self.gene_ppl]
         if self.mode == 2:
             for i in range(len(self.gene_ppl)):  # for evry individual
@@ -202,7 +197,7 @@ class GA:
             self.time_end = time.time()
             self.res['gen'] = [gen]
             self.res['run_time'] = ["{:.4f} sec".format(
-                self.time_end-self.time_start)]
+                self.time_end - self.time_start)]
         if cur_res['cost'][0] < self.res['cost'][-1]:  # Better solution
             self.time_end = time.time()
             self.res['cost'].extend(cur_res['cost'])
@@ -222,7 +217,6 @@ class GA:
         Selects a group and generates new generation
         """
         print("Optimization starts!")
-        self.time_start = time.time()
         for gen in tqdm(range(self.cfg.GA.MAX_GEN)):
             self.eval_ppl()
             print('Generation: {}'.format(gen))

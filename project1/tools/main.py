@@ -1,11 +1,11 @@
 import sys
 import json
 from easydict import EasyDict as edict
-from tqdm import tqdm
+from pprint import pprint
 sys.path.append("..")
-
-from tools.dataset import Data_loader
 from algorithms.GA import GA
+from algorithms.DP import DP
+from tools.dataset import Data_loader
 
 def get_config(cfg_path):
     return edict(json.load(open(cfg_path, 'r')))
@@ -27,9 +27,24 @@ def cost(S1, S2):
     return cost
 
 
+def run_genetic_algorithm(cfg, data_loader):
+    print("Testing Genetic Algorithm...")
+    ga = GA(cfg=cfg, loader=data_loader, cost_func=cost)
+    ga.eval_ppl()
+    ga.optimize()
+    return ga.res
+
+
+def run_dynamic_programming(cfg, data_loader):
+    print("Testing Dynamic Programming Algorithm...")
+    dp = DP(cfg, data_loader)
+    dp.search()
+
 if __name__ == '__main__':
     cfg = get_config('../config/default.json')
     data_loader = Data_loader(cfg)
-    ga = GA(cfg = cfg, loader=data_loader,cost_func = cost)
-    ga.eval_ppl()
-    ga.optimize()
+
+    run_dynamic_programming(cfg, data_loader)
+
+    # GA_res = run_genetic_algorithm(cfg, data_loader)
+    # pprint(GA_res)
