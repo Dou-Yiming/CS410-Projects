@@ -218,8 +218,8 @@ class GA:
         """
         print("Optimization starts!")
         for gen in tqdm(range(self.cfg.GA.MAX_GEN)):
-            self.eval_ppl()
             print('Generation: {}'.format(gen))
+            self.eval_ppl()
             cur_res = self.cost_best()
             self.add_res(cur_res, gen)
             json.dump(self.res, open(osp.join(self.cfg.RESULT.DIR,

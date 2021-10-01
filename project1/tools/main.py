@@ -30,9 +30,7 @@ def cost(S1, S2):
 def run_genetic_algorithm(cfg, data_loader):
     print("Testing Genetic Algorithm...")
     ga = GA(cfg=cfg, loader=data_loader, cost_func=cost)
-    ga.eval_ppl()
     ga.optimize()
-    return ga.res
 
 
 def run_dynamic_programming(cfg, data_loader):
@@ -44,7 +42,6 @@ if __name__ == '__main__':
     cfg = get_config('../config/default.json')
     data_loader = Data_loader(cfg)
 
-    run_dynamic_programming(cfg, data_loader)
+    # run_dynamic_programming(cfg, data_loader)
 
-    # GA_res = run_genetic_algorithm(cfg, data_loader)
-    # pprint(GA_res)
+    run_genetic_algorithm(cfg, data_loader)
