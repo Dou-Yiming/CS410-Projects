@@ -1,4 +1,4 @@
-# Project1: Implement three algorithms to solve multiple sequence alignment (MSA) problems
+# Project1: Three algorithms to solve MSA problems
 
 In this document, the implementation, results, running time and time complexity of the 3 algorithms will be described respectively.
 
