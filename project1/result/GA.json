@@ -1,0 +1,1 @@
+{"mode": "3-seq", "cost": [17], "query": ["-a---b---c"], "value1": ["-a---b-c-s"], "value2": ["-a---b-cde"], "gen": [0], "run_time": ["0.0060 sec"]}

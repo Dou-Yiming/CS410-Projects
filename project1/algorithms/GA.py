@@ -2,10 +2,11 @@ import random
 from random import randint as rint
 import json
 import math
-import numpy as np
 from tqdm import tqdm
 import os.path as osp
 import time
+from pprint import pprint
+
 
 class Gene:
     def __init__(self, traits):
@@ -18,11 +19,15 @@ class Gene:
     def __lt__(self, other):
         return self.fittness < other.fittness
 
+    def __gt__(self, other):
+        return self.fittness > other.fittness
+
     def traits2gene(self, traits):
         gene = []
         for t in traits:
             gene += t
         return gene
+
 
 class GA:
     def __init__(self, cfg=None, loader=None, cost_func=None):
@@ -91,7 +96,7 @@ class GA:
 
     def crossover(self, gene_pair):
         """
-        This function generate two offsprings of the pair of Gene
+        Generate two offsprings of the pair of Gene
         pair: [gene1, gene2]
         mode: 1 or 2
         mode = 1 ===> single-point-crossover
@@ -120,25 +125,34 @@ class GA:
 
     def mutation(self, gene):
         """
-        This function randomly changes one element in gene
+        Randomly change one element in gene
         bound: the pair of lower and upper bound of mutation element
         """
-        bound = [1, max(gene)]
         length = len(gene)
         pos = random.randrange(0, length)
+
+        seq_no = 0
+        tmp_pos = pos
+        while tmp_pos >= self.loader.max_seq_len -\
+                self.loader.seq_len[seq_no]:
+            tmp_pos -= (self.loader.max_seq_len - \
+                self.loader.seq_len[seq_no])
+            seq_no += 1
+
+        bound = [1, max(self.gene2traits(gene)[seq_no])]
         gene[pos] = random.randint(bound[0], bound[1])
         return gene
 
     def selection(self):
         """
-        This function randomly selects k individuals from the population
+        Randomly select k individuals from the population
         individuals with higher fittness are more likely to be chosen
         """
         s_popu = sorted(self.gene_ppl, reverse=True)
         sum_fittness = sum(p.fittness for p in self.gene_ppl)
-        print("Best fittness: {}".format(
+        print("Best fittness: {:.6f}".format(
             max(p.fittness for p in self.gene_ppl)))
-        print("Mean fittness: {}".format(sum_fittness/len(self.gene_ppl)))
+        print("Mean fittness: {:.6f}".format(sum_fittness/len(self.gene_ppl)))
         chosen = []  # The chosen individuals
         k = self.cfg.GA.NEXT_GEN
         for i in range(k):
@@ -153,22 +167,27 @@ class GA:
 
     def select_best(self):
         """
-        This function selects the best individual
+        Select the best individual
         """
         return max(self.gene_ppl)
 
-    def cost_best(self):
+    def select_worst(self):
         """
-        Computes the cost of currently best individual
+        Select the worst individual
+        """
+        return min(self.gene_ppl)
+
+    def cost_traits(self, traits):
+        """
+        Computes the cost of traits
         """
         ans = {}
         ans['mode'] = 'pairwise' if self.mode == 2 else '3-seq'
-        best_traits = self.gene2traits(self.select_best().gene)
         ans['cost'] = [math.inf]
-        q = self.add_bar(self.loader.query[1], best_traits[0])
+        q = self.add_bar(self.loader.query[1], traits[0])
         if self.mode == 2:
             for j in range(len(self.loader.database)):  # for every seq
-                s = self.add_bar(self.loader.database[j], best_traits[j + 1])
+                s = self.add_bar(self.loader.database[j], traits[j + 1])
                 cur_cost = self.cost_func(q, s)
                 if cur_cost < ans['cost'][0]:
                     ans['cost'] = [cur_cost]
@@ -178,9 +197,9 @@ class GA:
             for j in range(len(self.loader.database)):
                 for k in range(j+1, len(self.loader.database)):
                     s1 = self.add_bar(
-                        self.loader.database[j], best_traits[j + 1])
+                        self.loader.database[j], traits[j + 1])
                     s2 = self.add_bar(
-                        self.loader.database[k], best_traits[k + 1])
+                        self.loader.database[k], traits[k + 1])
                     cur_cost = self.cost_func(
                         q, s1)+self.cost_func(q, s2)+self.cost_func(s1, s2)
                     if cur_cost < ans['cost'][0]:
@@ -207,6 +226,7 @@ class GA:
             else:
                 self.res['value1'].extend(cur_res['value1'])
                 self.res['value2'].extend(cur_res['value2'])
+            self.res["mode"]='pairwise' if self.mode==2 else '3-seq'
             self.res['gen'].append(gen)
             self.res['run_time'].append(
                 "{:.4f} sec".format(self.time_end-self.time_start))
@@ -220,12 +240,16 @@ class GA:
         for gen in tqdm(range(self.cfg.GA.MAX_GEN)):
             print('Generation: {}'.format(gen))
             self.eval_ppl()
-            cur_res = self.cost_best()
+            best_traits = self.gene2traits(self.select_best().gene)
+            worst_traits = self.gene2traits(self.select_worst().gene)
+            cur_res = self.cost_traits(best_traits)
+            worst_res = self.cost_traits(worst_traits)
+
             self.add_res(cur_res, gen)
             json.dump(self.res, open(osp.join(self.cfg.RESULT.DIR,
-                                              'GA_PPL{}_{}.json'.format(self.cfg.GA.PPL,
-                                                                        self.res['mode'])), 'w'))
+                                              'GA.json'), 'w'))
             print("min_cost: {}".format(self.res['cost'][-1]))
+            print("max_cost: {}".format(worst_res['cost'][0]))
             chosen = self.selection()
             next_gen = []
             while len(next_gen) < self.cfg.GA.NEXT_GEN:
@@ -237,3 +261,4 @@ class GA:
                 else:
                     next_gen.extend(pair)
             self.gene_ppl = next_gen
+        pprint(self.res)

@@ -1,1 +1,1 @@
-{"mode": "3-seq", "cost": "4.0", "query": "abc-", "value1": "abc-", "value2": "abcd", "run_time": "0.3189 sec"}
+{"mode": "3-seq", "cost": "11.0", "query": "abc--", "value1": "abc-s", "value2": "abcde", "run_time": "0.0154 sec"}

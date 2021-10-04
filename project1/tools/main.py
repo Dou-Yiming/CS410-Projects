@@ -5,7 +5,9 @@ from pprint import pprint
 sys.path.append("..")
 from algorithms.GA import GA
 from algorithms.DP import DP
+from algorithms.Astar import Astar
 from tools.dataset import Data_loader
+
 
 def get_config(cfg_path):
     return edict(json.load(open(cfg_path, 'r')))
@@ -38,10 +40,19 @@ def run_dynamic_programming(cfg, data_loader):
     dp = DP(cfg, data_loader)
     dp.search()
 
+
+def run_Astar(cfg, data_loader):
+    print("Testing Astar Algorithm...")
+    astar = Astar(cfg, data_loader)
+    astar.search()
+
+
 if __name__ == '__main__':
     cfg = get_config('../config/default.json')
     data_loader = Data_loader(cfg)
 
-    # run_dynamic_programming(cfg, data_loader)
+    run_dynamic_programming(cfg, data_loader)
+
+    run_Astar(cfg, data_loader)
 
     run_genetic_algorithm(cfg, data_loader)
