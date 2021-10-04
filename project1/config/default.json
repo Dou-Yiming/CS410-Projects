@@ -1,18 +1,19 @@
 {
     "QUERY": [
-        3,
-        "abc"
+        2,
+        "KJXXJAJKPXKJJXJKPXKJXXJAJKPXKJJXJKPXKJXXJAJKPXKJXXJAJKHXKJXXJAJKPXKJXXJAJKHXKJXX"
     ],
     "DATASET": {
-        "DATA_DIR": "../data/"
+        "DATA_DIR": "../data/",
+        "DB": "MSA_database.txt"
     },
-    "RESULT":{
-        "DIR":"../result"
+    "RESULT": {
+        "DIR": "../result"
     },
     "GA": {
         "PPL": 100,
         "NEXT_GEN": 100,
-        "MAX_GEN":100,
+        "MAX_GEN": 100,
         "CROSSOVER": {
             "MODE": 2,
             "PROB": 0.4

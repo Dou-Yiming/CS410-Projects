@@ -84,7 +84,7 @@ res DP(string &X, string &Y, string &Z, const int &delta = 2)
         value1[0][0][i] = value1[0][0][i - 1] + '-';
         value2[0][0][i] = Z.substr(0, i);
     }
-    
+
     // pre-compute 3 surfaces
     vector<int> cand;
     for (int i = 1; i <= m; ++i)
@@ -179,9 +179,9 @@ res DP(string &X, string &Y, string &Z, const int &delta = 2)
                 cout << "ERROR\n";
         }
     // compute in cubic
-    for (int i = 1; i <= m; ++i)
-        for (int j = 1; j <= n; ++j)
-            for (int k = 1; k <= o; ++k)
+    for (register int i = 1; i <= m; ++i)
+        for (register int j = 1; j <= n; ++j)
+            for (register int k = 1; k <= o; ++k)
             {
                 char c1 = X[i - 1], c2 = Y[j - 1], c3 = Z[k - 1];
                 // printf("cur_pos: (%d,%d,%d)\n",i,j,k);
@@ -255,8 +255,8 @@ int main()
     clock_t timer_start = clock();
     // read data
     ifstream query_in("./query.txt", ifstream::in);
-    ifstream db_in("../data/MSA_database.txt", ifstream::in);
-    // ifstream db_in("../data/toy_database.txt", ifstream::in);
+    // ifstream db_in("../data/MSA_database.txt", ifstream::in);
+    ifstream db_in("../data/toy_database.txt", ifstream::in);
     if (!query_in.is_open() || !db_in.is_open())
     {
         cerr << "Error: cannot open input file" << endl;
@@ -273,10 +273,9 @@ int main()
     res final_res;
     for (int i = 0; i < db.size(); ++i)
     {
-        cout<<i<<endl;
+        cout << i << endl;
         for (int j = i + 1; j < db.size(); ++j)
         {
-            cout << i << " " << j << endl;
             string seq1 = db[i];
             string seq2 = db[j];
             res cur_res = DP(query, seq1, seq2, 2);

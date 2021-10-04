@@ -1,13 +1,9 @@
-import random
-from random import randint as rint
 import json
 import math
-import re
 from tqdm import tqdm
 import os.path as osp
 import time
 import heapq
-import ipdb
 from pprint import pprint
 import numpy as np
 
@@ -135,6 +131,7 @@ class Astar:
         """
         Search the optimal alignment of all pairs
         """
+        print("Searching...")
         query = self.loader.query[1]
         for seq in tqdm(self.loader.database):
             pair_cost, q, s = self.align_pair(query, seq)
@@ -151,18 +148,6 @@ class Astar:
 
     def search_3_seq(self):
         query = self.loader.query[1]
-        # precompute using dp (since dp is much faster in 2-dim)
-        # print('Pre-computing...')
-        # pair_mat = [np.zeros((1, 100)), np.zeros((100, 100))]
-        # for i in tqdm(range(len(self.loader.database))):
-        #     seq1 = self.loader.database[i]
-        #     dp = self.init_dp(query, seq1)
-        #     pair_mat[0][0][i] = self.align_pair_dp(query, seq1, dp)
-        #     for j in range(i+1, len(self.loader.database)):
-        #         seq2 = self.loader.database[j]
-        #         dp = self.init_dp(seq1, seq2)
-        #         pair_mat[1][i][j] = self.align_pair_dp(seq1, seq2, dp)
-
         # Compute 3-seq alignment
         print("Searching...")
         for i in tqdm(range(len(self.loader.database))):
@@ -173,8 +158,6 @@ class Astar:
                 self.init_lists_3()
                 # search
                 while not len(self.open_list) == 0:
-                    # print(len(self.closed_list),
-                    #       (len(query)+1)*(len(seq1)+1)*(len(seq2)+1))
                     head = heapq.heappop(self.open_list)
                     if head.pos in self.closed_list:
                         continue
@@ -216,14 +199,9 @@ class Astar:
                         else:
                             cost_added = 2*self.delta
                         g = head.g + cost_added
-                        # print(n,cost_added)
-                        # f = g
-                        # h=pair_mat[0][0][0] + pair_mat[0][0][j] + pair_mat[1][i][j]
                         h = H_dist(n, self.goal)
                         f = g + h
                         heapq.heappush(self.open_list, Node(n, g, f))
-                # print(len(self.closed_list),
-                #       (len(query)+1)*(len(seq1)+1)*(len(seq2)+1))
 
     def save_res(self):
         self.time_end = time.time()
@@ -236,7 +214,6 @@ class Astar:
 
     def search(self):
         if self.mode == 2:
-            print("Searching...")
             self.search_2_seq()
         elif self.mode == 3:
             self.search_3_seq()

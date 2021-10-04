@@ -150,9 +150,9 @@ class GA:
         """
         s_popu = sorted(self.gene_ppl, reverse=True)
         sum_fittness = sum(p.fittness for p in self.gene_ppl)
-        print("Best fittness: {:.6f}".format(
-            max(p.fittness for p in self.gene_ppl)))
-        print("Mean fittness: {:.6f}".format(sum_fittness/len(self.gene_ppl)))
+        # print("Best fittness: {:.6f}".format(
+        #     max(p.fittness for p in self.gene_ppl)))
+        # print("Mean fittness: {:.6f}".format(sum_fittness/len(self.gene_ppl)))
         chosen = []  # The chosen individuals
         k = self.cfg.GA.NEXT_GEN
         for i in range(k):
@@ -238,7 +238,7 @@ class GA:
         """
         print("Optimization starts!")
         for gen in tqdm(range(self.cfg.GA.MAX_GEN)):
-            print('Generation: {}'.format(gen))
+            # print('Generation: {}'.format(gen))
             self.eval_ppl()
             best_traits = self.gene2traits(self.select_best().gene)
             worst_traits = self.gene2traits(self.select_worst().gene)
@@ -248,8 +248,8 @@ class GA:
             self.add_res(cur_res, gen)
             json.dump(self.res, open(osp.join(self.cfg.RESULT.DIR,
                                               'GA.json'), 'w'))
-            print("min_cost: {}".format(self.res['cost'][-1]))
-            print("max_cost: {}".format(worst_res['cost'][0]))
+            # print("min_cost: {}".format(self.res['cost'][-1]))
+            # print("max_cost: {}".format(worst_res['cost'][0]))
             chosen = self.selection()
             next_gen = []
             while len(next_gen) < self.cfg.GA.NEXT_GEN:

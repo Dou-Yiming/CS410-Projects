@@ -2,7 +2,9 @@ import sys
 import json
 from easydict import EasyDict as edict
 from pprint import pprint
+
 sys.path.append("..")
+
 from algorithms.GA import GA
 from algorithms.DP import DP
 from algorithms.Astar import Astar

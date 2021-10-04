@@ -10,5 +10,6 @@
         "queue": "cpp",
         "deque": "cpp",
         "xutility": "cpp"
-    }
+    },
+    "jupyter.jupyterServerType": "local"
 }

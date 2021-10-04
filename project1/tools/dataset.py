@@ -12,9 +12,6 @@ class Data_loader:
         self.max_seq_len = max(self.seq_len)
 
     def load_database(self):
-        # with open(osp.join(self.cfg.DATASET.DATA_DIR,
-        #                    'MSA_database.txt')) as f:
-        with open(osp.join(self.cfg.DATASET.DATA_DIR,
-                           'toy_database.txt')) as f:
+        with open(osp.join(self.cfg.DATASET.DATA_DIR,self.cfg.DATASET.DB)) as f:
             self.database = f.readlines()
             self.database = [line.strip("\n") for line in self.database]

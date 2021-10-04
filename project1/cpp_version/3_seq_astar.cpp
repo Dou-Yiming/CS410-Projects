@@ -110,7 +110,7 @@ int align_2_seq(string X, string Y, int delta)
     return dp[m][n];
 }
 
-int align_3_seq(string X, string Y, string Z, int delta)
+res align_3_seq(string X, string Y, string Z, int delta)
 {
     // pre-compute as heuristic function
     int m = int(X.length()), n = int(Y.length()), o = int(Z.length());
@@ -140,7 +140,6 @@ int align_3_seq(string X, string Y, string Z, int delta)
     vector<vector<int>> closed_list;
     while (open_list.size() != 0)
     {
-        // cout << "sss\n";
         Node head = open_list.top();
         open_list.pop();
         vector<int> pos;
@@ -152,8 +151,12 @@ int align_3_seq(string X, string Y, string Z, int delta)
             closed_list.push_back(pos);
         if (is_equal(head.pos, goal))
         {
-            // printf("Result: %d\n", head.g);
-            return head.g;
+            res r;
+            r.cost = head.g;
+            r.q = head.query;
+            r.v1 = head.seq1;
+            r.v2 = head.seq2;
+            return r;
         }
         int p0 = head.pos[0], p1 = head.pos[1], p2 = head.pos[2];
         int neighbours[7][3] = {
@@ -174,6 +177,7 @@ int align_3_seq(string X, string Y, string Z, int delta)
                 continue;
             int g = head.g, h, f;
             int cost_added;
+            string q, s1, s2;
             if (l == 0)
             {
                 cost_added = alpha(
@@ -182,6 +186,9 @@ int align_3_seq(string X, string Y, string Z, int delta)
                                  Y[p1], Z[p2]) +
                              alpha(X[p0], Z[p2]);
                 h = matXY[p0 + 1][p1 + 1] + matXZ[p0 + 1][p2 + 1] + matYZ[p1 + 1][p2 + 1];
+                q = head.query + X[p0];
+                s1 = head.seq1 + Y[p1];
+                s2 = head.seq2 + Z[p2];
             }
             else if (l == 1)
             {
@@ -189,6 +196,9 @@ int align_3_seq(string X, string Y, string Z, int delta)
                                  X[p0], Y[p1]) +
                              2 * delta;
                 h = matXY[p0 + 1][p1 + 1] + matXZ[p0 + 1][p2] + matYZ[p1 + 1][p2];
+                q = head.query + X[p0];
+                s1 = head.seq1 + Y[p1];
+                s2 = head.seq2 + "-";
             }
             else if (l == 2)
             {
@@ -196,6 +206,9 @@ int align_3_seq(string X, string Y, string Z, int delta)
                                  X[p0], Z[p2]) +
                              2 * delta;
                 h = matXY[p0 + 1][p1] + matXZ[p0 + 1][p2 + 1] + matYZ[p1][p2 + 1];
+                q = head.query + X[p0];
+                s1 = head.seq1 + "-";
+                s2 = head.seq2 + Z[p2];
             }
             else if (l == 3)
             {
@@ -203,31 +216,41 @@ int align_3_seq(string X, string Y, string Z, int delta)
                                  Y[p1], Z[p2]) +
                              2 * delta;
                 h = matXY[p0][p1 + 1] + matXZ[p0][p2 + 1] + matYZ[p1 + 1][p2 + 1];
+                q = head.query + "-";
+                s1 = head.seq1 + Y[p1];
+                s2 = head.seq2 + Z[p2];
             }
             else if (l == 4)
             {
                 cost_added = 2 * delta;
                 h = matXY[p0 + 1][p1] + matXZ[p0 + 1][p2] + matYZ[p1][p2];
+                q = head.query + X[p0];
+                s1 = head.seq1 + "-";
+                s2 = head.seq2 + "-";
             }
             else if (l == 5)
             {
                 cost_added = 2 * delta;
                 h = matXY[p0][p1 + 1] + matXZ[p0][p2] + matYZ[p1 + 1][p2];
+                q = head.query + "-";
+                s1 = head.seq1 + Y[p1];
+                s2 = head.seq2 + "-";
             }
             else if (l == 6)
             {
                 cost_added = 2 * delta;
                 h = matXY[p0][p1] + matXZ[p0][p2 + 1] + matYZ[p1][p2 + 1];
+                q = head.query + "-";
+                s1 = head.seq1 + "-";
+                s2 = head.seq2 + Z[p2];
             }
-            // cout << h << endl;
             g += cost_added;
             f = g + h;
-            Node new_node(nei, g, f);
-            // cout << "push\n";
+            Node new_node(nei, g, f, q = q, s1 = s1, s2 = s2);
             open_list.push(new_node);
         }
     }
-    return -1;
+    return res();
 }
 
 int main()
@@ -236,7 +259,6 @@ int main()
     // read data
     ifstream query_in("./query.txt", ifstream::in);
     ifstream db_in("../data/MSA_database.txt", ifstream::in);
-    // ifstream db_in("../data/toy_database.txt", ifstream::in);
     if (!query_in.is_open() || !db_in.is_open())
     {
         cerr << "Error: cannot open input file" << endl;
@@ -253,18 +275,17 @@ int main()
     res final_res;
     int delta = 2;
     for (int i = 0; i < db.size(); ++i)
-    {
-        cout<<i<<endl;
         for (int j = i + 1; j < db.size(); ++j)
         {
-            cout << i << " " << j << endl;
             string Y = db[i];
             string Z = db[j];
-            int cur_cost = align_3_seq(query, Y, Z, delta);
-            final_res.cost = cur_cost < final_res.cost ? cur_cost : final_res.cost;
+            res cur_res = align_3_seq(query, Y, Z, delta);
+            final_res = cur_res.cost < final_res.cost ? cur_res : final_res;
         }
-    }
     printf("min_cost: %d \n", final_res.cost);
+    cout << final_res.q << endl;
+    cout << final_res.v1 << endl;
+    cout << final_res.v2 << endl;
     clock_t timer_end = clock();
     cout << "Running time: " << (timer_end - timer_start) * 1000 / CLOCKS_PER_SEC << "ms" << endl;
 }

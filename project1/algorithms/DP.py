@@ -47,15 +47,15 @@ class DP:
 
     def alpha(self, c1, c2):
         return 3 if not c1 == c2 else 0
-    
+
     def search_2_seq(self):
         for k in tqdm(range(len(self.dps))):
             dp = self.dps[k]
             # store route
             query = [['' for j in range(dp.shape[1])]
-                        for i in range(dp.shape[0])]
+                     for i in range(dp.shape[0])]
             value = [['' for j in range(dp.shape[1])]
-                        for i in range(dp.shape[0])]
+                     for i in range(dp.shape[0])]
             for i in range(1, dp.shape[0]):
                 query[i][0] = self.loader.query[1][0:i]
                 value[i][0] = '-'*i
@@ -64,7 +64,6 @@ class DP:
                 value[0][i] = self.loader.database[k][0:i]
             # compute dp
             for i in range(1, dp.shape[0]):
-                # dp[i][0] = dp[i - 1][0] + self.delta
                 for j in range(1, dp.shape[1]):
                     c1 = self.loader.query[1][i-1]
                     c2 = self.loader.database[k][j-1]
@@ -72,7 +71,7 @@ class DP:
                             dp[i-1][j] + self.delta,
                             dp[i][j-1] + self.delta,
                             ]
-                    dp[i][j]=min(cand)
+                    dp[i][j] = min(cand)
                     if cand[0] == dp[i][j]:
                         query[i][j] = query[i-1][j-1]+c1
                         value[i][j] = value[i-1][j-1]+c2
@@ -84,23 +83,23 @@ class DP:
                         value[i][j] = value[i][j-1]+c2
             cur_cost = dp[dp.shape[0]-1][dp.shape[1]-1]
             self.res = {"mode": 'pairwise' if self.mode == 2 else '3-seq',
-                    "cost": cur_cost, "query": query[dp.shape[0]-1][dp.shape[1]-1],
-                    "value": value[dp.shape[0]-1][dp.shape[1]-1],
-                    } if cur_cost < self.res['cost'] else self.res
-    
+                        "cost": cur_cost, "query": query[dp.shape[0]-1][dp.shape[1]-1],
+                        "value": value[dp.shape[0]-1][dp.shape[1]-1],
+                        } if cur_cost < self.res['cost'] else self.res
+
     def search_3_seq(self):
         for l in tqdm(range(len(self.dps))):
             dp = self.dps[l]
             # store route
             query = [[['' for k in range(dp.shape[2])]
-                        for j in range(dp.shape[1])]
-                        for i in range(dp.shape[0])]
+                      for j in range(dp.shape[1])]
+                     for i in range(dp.shape[0])]
             value1 = [[['' for k in range(dp.shape[2])]
-                        for j in range(dp.shape[1])]
-                        for i in range(dp.shape[0])]
+                       for j in range(dp.shape[1])]
+                      for i in range(dp.shape[0])]
             value2 = [[['' for k in range(dp.shape[2])]
-                        for j in range(dp.shape[1])]
-                        for i in range(dp.shape[0])]
+                       for j in range(dp.shape[1])]
+                      for i in range(dp.shape[0])]
 
             for i in range(1, dp.shape[0]):
                 query[i][0][0] = self.loader.query[1][0:i]
@@ -243,12 +242,12 @@ class DP:
                             value2[i][j][k] = value2[i-1][j][k]+'-'
             cur_cost = dp[dp.shape[0]-1][dp.shape[1]-1][dp.shape[2]-1]
             self.res = {"mode": '3-seq',
-                    "cost": cur_cost, "query": query[dp.shape[0]-1][dp.shape[1]-1][dp.shape[2]-1],
-                    "value1": value1[dp.shape[0]-1][dp.shape[1]-1][dp.shape[2]-1],
-                    "value2": value2[dp.shape[0]-1][dp.shape[1]-1][dp.shape[2]-1],
-                    } if cur_cost < self.res['cost'] else self.res
+                        "cost": cur_cost, "query": query[dp.shape[0]-1][dp.shape[1]-1][dp.shape[2]-1],
+                        "value1": value1[dp.shape[0]-1][dp.shape[1]-1][dp.shape[2]-1],
+                        "value2": value2[dp.shape[0]-1][dp.shape[1]-1][dp.shape[2]-1],
+                        } if cur_cost < self.res['cost'] else self.res
             # pprint(self.res)
-    
+
     def save_res(self):
         self.time_end = time.time()
         self.res["run_time"] = "{:.4f} sec".format(
@@ -257,7 +256,7 @@ class DP:
         self.res = {k: str(v) for k, v in self.res.items()}
         json.dump(self.res, open(osp.join(self.cfg.RESULT.DIR,
                                           'DP.json'), 'w'))
-    
+
     def search(self):
         print("Searching...")
         if self.mode == 2:

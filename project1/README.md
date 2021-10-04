@@ -18,8 +18,6 @@ All of the experiments are performed on my laptop with an *Intel i7-10875H@2.3GH
 
 The population amount of Genetic Algorithm is 100, while the probability of crossover and mutation is 0.4 and 0.6, respectively.
 
-
-
 #### Results of Pairwise Alignment:
 
 | Algorithm           | Result (cost of alignment)                                   | Running Time                                                 |
@@ -71,7 +69,7 @@ The population amount of Genetic Algorithm is 100, while the probability of cros
 | Algorithm           | Result (cost of alignment) | Running Time                                                 |
 | ------------------- | -------------------------- | ------------------------------------------------------------ |
 | Dynamic Programming | ①: 290<br />②: 122<br />   | ①: ~20h (Python),  4min59s (C++)<br />②: ~20h (Python),  4min38s (C++)<br /> |
-| A-star (A*)         | ①: 290<br />②: 122<br />   | ①: ~20h (Python)<br />②: ~20h (Python)<br />                 |
+| A-star (A*)         | ①: 290<br />②: 122<br />   | ①: >20h (Python), ~6h (C++)<br />②: >20h (Python), ~6h (C++)<br /> |
 | Genetic Algorithm   | ①: 609<br />②: 600<br />   | ①: 2min45s<br />②: 55.67s<br />                              |
 
 **The alignment of each query found by each algorithm:**
@@ -94,3 +92,6 @@ The population amount of Genetic Algorithm is 100, while the probability of cros
         - I-WTJB-G-TJGJTW-G-BJT-P-KHAXHA--GJJ-SJJP--P-JAPJ-HJH-JHJHJHJHJHJHJPKS-TJJUWXHGPH--GAL-K-L-PJTPJ-PGV--XPL-BJHH-JPKWPPDJSG
         - --IP-P-J-O--J-PJ-J-JPJ-OJP-P-A--J--O-J-PK---JO---JP-J-JJP-P-AJ-O-J-P-J--JJ-P--P-A--J--O---J--PJ--JJ--PP-A-J--OJ---PJJJ-P
         - --IPH--JJ-JPJ-JJ-PAJOJ-PJJ--J-PAJO--J-PPJ--JJ-K-H--J-JJ--PJ--J---JP-JJJPAJO--J-P-JJ--J--PH-J-JJ-PJJJ-PAJO-J--PJ-J-JP-HJJ
+
+### Analysis of Results
+
