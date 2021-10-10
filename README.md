@@ -2,4 +2,6 @@
 
 The projects of SJTU-CS410-Artificial Intelligence
 
-## Project1: Implement three algorithms to solve multiple sequence alignment (MSA) problems
+#### Project1: Implement three algorithms to solve multiple sequence alignment (MSA) problems
+
+[Project Page](https://github.com/Iridoudou/CS410-Projects/tree/main/project1)
