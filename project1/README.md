@@ -131,7 +131,9 @@ Based on the hypothesis that the reduced amount is $0$, every node should be pop
 
 In the inner loop, the conjunctive nodes of the popped node should be visited and pushed into the open-list.
 
-Based on the analysis above, each node is pushed into and popped from the open-list for one time. Pay attention that the open-list in my implementation is a **min-heap**, which is an tiny optimization. Therefore, the overall time complexity is $O(nlogn)$.
+Based on the analysis above, each node is pushed into and popped from the open-list for one time. Pay attention that the open-list in my implementation is a **min-heap**, which is an tiny optimization. 
+
+Therefore, the overall time complexity is $O(nlogn)$.
 
 ### Genetic Algorithm
 

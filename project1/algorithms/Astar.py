@@ -100,7 +100,7 @@ class Astar:
                 if l == 0:
                     cost_added = self.delta
                     q = head.query + seq1[p0]
-                    s = head.seq1+'-'
+                    s = head.seq1 + '-'
                 elif l == 1:
                     cost_added = self.delta
                     q = head.query + '-'

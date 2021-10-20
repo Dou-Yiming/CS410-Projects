@@ -7,6 +7,7 @@
 #include <set>
 #include <time.h>
 #include <queue>
+#include<math.h>
 using namespace std;
 
 struct res
