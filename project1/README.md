@@ -195,9 +195,13 @@ $$
 
 This section shows the results of the alignment of each algorithm.
 
-All of the experiments are performed on my laptop with an *Intel i7-10875H@2.3GHz* CPU and 16GB memory.
+All of the experiments are performed on my laptop with an *Intel i7-10875H* CPU and 16GB memory.
 
 The population amount of Genetic Algorithm is 100, while the probability of crossover and mutation is 0.4 and 0.6, respectively.
+
+For the 3-sequence alignment using DP and A* algorithm, both Python version and C++ version are implemented. The reason is that the running time of Python version is too long to be acceptable. 
+
+Moreover, early-stop is also implemented in A* algorithm, allowing the alignment program to return ahead of time when the cost of the head of open list is larger than the current optimal solution.
 
 #### Results of Pairwise Alignment:
 
@@ -250,7 +254,7 @@ The population amount of Genetic Algorithm is 100, while the probability of cros
 | Algorithm           | Result (cost of alignment) | Running Time                                                 |
 | ------------------- | -------------------------- | ------------------------------------------------------------ |
 | Dynamic Programming | ①: 290<br />②: 122<br />   | ①: ~20h (Python),  4min59s (C++)<br />②: ~20h (Python),  4min38s (C++)<br /> |
-| A-star (A*)         | ①: 290<br />②: 122<br />   | ①: >20h (Python), ~6h (C++)<br />②: >20h (Python), ~6h (C++)<br /> |
+| A-star (A*)         | ①: 290<br />②: 122<br />   | ①: >20h (Python), ~6h (C++), 20min41s (C++, with early-stop)<br />②: >20h (Python), ~6h (C++), 24min1s (C++, with early-stop)<br /> |
 | Genetic Algorithm   | ①: 609<br />②: 600<br />   | ①: 2min45s<br />②: 55.67s<br />                              |
 
 **The alignment of each query found by each algorithm:**
