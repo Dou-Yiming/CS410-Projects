@@ -7,7 +7,7 @@
 #include <set>
 #include <time.h>
 #include <queue>
-#include<math.h>
+#include <math.h>
 using namespace std;
 
 struct res
@@ -111,7 +111,7 @@ int align_2_seq(string X, string Y, int delta)
     return dp[m][n];
 }
 
-res align_3_seq(string X, string Y, string Z, int delta)
+res align_3_seq(string X, string Y, string Z, int delta, res final_res)
 {
     // pre-compute as heuristic function
     int m = int(X.length()), n = int(Y.length()), o = int(Z.length());
@@ -142,6 +142,8 @@ res align_3_seq(string X, string Y, string Z, int delta)
     while (open_list.size() != 0)
     {
         Node head = open_list.top();
+        if (head.f >= final_res.cost) // early stop
+            return res();
         open_list.pop();
         vector<int> pos;
         for (int i = 0; i < 3; ++i)
@@ -280,10 +282,9 @@ int main()
         {
             string Y = db[i];
             string Z = db[j];
-            res cur_res = align_3_seq(query, Y, Z, delta);
+            res cur_res = align_3_seq(query, Y, Z, delta, final_res);
             final_res = cur_res.cost < final_res.cost ? cur_res : final_res;
         }
-    printf("min_cost: %d \n", final_res.cost);
     cout << final_res.q << endl;
     cout << final_res.v1 << endl;
     cout << final_res.v2 << endl;

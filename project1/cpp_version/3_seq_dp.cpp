@@ -256,7 +256,7 @@ int main()
     // read data
     ifstream query_in("./query.txt", ifstream::in);
     // ifstream db_in("../data/MSA_database.txt", ifstream::in);
-    ifstream db_in("../data/toy_database.txt", ifstream::in);
+    ifstream db_in("../data/MSA_database.txt", ifstream::in);
     if (!query_in.is_open() || !db_in.is_open())
     {
         cerr << "Error: cannot open input file" << endl;
