@@ -1,1 +1,1 @@
-{"mode": "3-seq", "cost": "11.0", "query": "abc--", "value1": "abc-s", "value2": "abcde", "run_time": "0.0154 sec"}
+{"mode": "pairwise", "cost": "112", "query": "KJX---XJAJKPXKJ-JX-JKPXKJXXJA--J-KPXKJ-JX-JKPXKJXXJAJKPXKJ-XXJAJ--KH--X-KJ-XXJAJKPXKJXXJAJKHXKJXX--", "value": "--XHAPXJAJ-XXXJAJXDJAJX--XXJAPXJAHXXXJAJXDJAJX--XXJAJ-XXXJPPXJAJXXXHAPXJAJXXXJAJ--X--XXJAJ--X--XXJA", "run_time": "2.0614 sec"}

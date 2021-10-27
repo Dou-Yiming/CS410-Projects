@@ -76,7 +76,7 @@ class GA:
                     s = self.add_bar(
                         self.loader.database[j], trait_ppl[i][j + 1])
                     individual_cost.append(self.cost_func(q, s))
-                self.gene_ppl[i].fittness = max([1000/(cost + 1e-8)  # avoid divide by 0
+                self.gene_ppl[i].fittness = max([1024/(cost + 1e-8)  # avoid divide by 0
                                                  for cost in individual_cost])
         elif self.mode == 3:
             for i in range(len(self.gene_ppl)):  # for evry individual
@@ -150,9 +150,9 @@ class GA:
         """
         s_popu = sorted(self.gene_ppl, reverse=True)
         sum_fittness = sum(p.fittness for p in self.gene_ppl)
-        # print("Best fittness: {:.6f}".format(
-        #     max(p.fittness for p in self.gene_ppl)))
-        # print("Mean fittness: {:.6f}".format(sum_fittness/len(self.gene_ppl)))
+        print("Best fittness: {:.6f}".format(
+            max(p.fittness for p in self.gene_ppl)))
+        print("Mean fittness: {:.6f}".format(sum_fittness/len(self.gene_ppl)))
         chosen = []  # The chosen individuals
         k = self.cfg.GA.NEXT_GEN
         for i in range(k):
@@ -211,12 +211,14 @@ class GA:
 
     def add_res(self, cur_res, gen):
         # add new result
+        update=False
         if self.res == None:
             self.res = cur_res
             self.time_end = time.time()
             self.res['gen'] = [gen]
             self.res['run_time'] = ["{:.4f} sec".format(
                 self.time_end - self.time_start)]
+            update =True 
         if cur_res['cost'][0] < self.res['cost'][-1]:  # Better solution
             self.time_end = time.time()
             self.res['cost'].extend(cur_res['cost'])
@@ -230,7 +232,8 @@ class GA:
             self.res['gen'].append(gen)
             self.res['run_time'].append(
                 "{:.4f} sec".format(self.time_end-self.time_start))
-
+            update =True 
+        return update
     def optimize(self):
         """
         The critical function of GA
@@ -245,9 +248,9 @@ class GA:
             cur_res = self.cost_traits(best_traits)
             worst_res = self.cost_traits(worst_traits)
 
-            self.add_res(cur_res, gen)
-            json.dump(self.res, open(osp.join(self.cfg.RESULT.DIR,
-                                              'GA.json'), 'w'))
+            if self.add_res(cur_res, gen):
+                json.dump(self.res, open(osp.join(self.cfg.RESULT.DIR,
+                                                'GA.json'), 'w'))
             # print("min_cost: {}".format(self.res['cost'][-1]))
             # print("max_cost: {}".format(worst_res['cost'][0]))
             chosen = self.selection()

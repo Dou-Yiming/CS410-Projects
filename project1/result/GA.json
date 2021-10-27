@@ -1,1 +1,23 @@
-{"mode": "pairwise", "cost": [192], "query": ["-K-J-X--X-JA-JK-PXK-JJXJKPX-K--JX-XJ--A-JKP-XKJJX-J-KPXK-JX-X---JAJ-K-P-X-K-JXXJAJK-H--XKJ--XXJAJKP-XKJ-X-X--JA-JKHXKJXX"], "value": ["IP-J-J-HM-J--J-P-Y-J---JH--H---G-JJH-P----PJJ--JSG-J-PHJJS--A--NH-J--JPKP-JH-HJ--JK-JP-KK--H--JJPK--P-J-JH---K-XJ-H--H-J"], "gen": [0], "run_time": ["0.6101 sec"]}
+{
+    "mode": "pairwise",
+    "cost": [
+        192,
+        187
+    ],
+    "query": [
+        "K-JX----X-JA-JKPXKJ-JXJ-K-PX-K-JXX-JAJKP-XKJJX-J-K-PX-KJ-X---XJAJK-PX-K--J-X-XJAJ-KH-XK--J-XX-JAJKP-XKJXX--JAJK-H-X-KJXX",
+        "K-J-XXJ-A-JKPXKJJ-XJKPXK-JXXJ-AJKP--X-KJJ--X-JK-P---XKJ-XX--JAJ-K-P-XK-JX--XJ---AJKH-X--KJ-X-XJAJKPXKJ-XX-JAJK--H-X-KJXX"
+    ],
+    "value": [
+        "--PP---J--J-PJJ--PP-JJ---PPJJ-K-J--JPPJ---JP-PJJ-G--T-JJ-JL-J-JMT-J-NL--JJ--TTJ---U--J-H--OJPGJ--JP-PJJ-P--JU-P-H-J--J-P",
+        "--IP--HP-JJH--HJJPJJ-KPJJPH--J--JJ----K----H-JJJP---PAJ-JJ-P-PJ-J-JKHJ-J---JP--P-J-J---JKP---JJ-JKP--J--JJ-K---PJJ--J--K"
+    ],
+    "gen": [
+        0,
+        2
+    ],
+    "run_time": [
+        "5.4645 sec",
+        "11.4318 sec"
+    ]
+}

@@ -11,8 +11,8 @@
         "DIR": "../result"
     },
     "GA": {
-        "PPL": 100,
-        "NEXT_GEN": 100,
+        "PPL": 1000,
+        "NEXT_GEN": 1000,
         "MAX_GEN": 100,
         "CROSSOVER": {
             "MODE": 2,

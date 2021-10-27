@@ -57,4 +57,4 @@ if __name__ == '__main__':
 
     # run_Astar(cfg, data_loader)
 
-    # run_genetic_algorithm(cfg, data_loader)
+    run_genetic_algorithm(cfg, data_loader)
