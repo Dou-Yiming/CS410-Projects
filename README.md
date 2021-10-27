@@ -8,4 +8,4 @@ The projects of SJTU-CS410-Artificial Intelligence
 
 #### Project2: Lux AI Challenge
 
-[Project Page]([CS410-Projects/project2 at main · Dou-Yiming/CS410-Projects (github.com)](https://github.com/Dou-Yiming/CS410-Projects/tree/main/project2))
+[Project Page](https://github.com/Dou-Yiming/CS410-Projects/tree/main/project2)
