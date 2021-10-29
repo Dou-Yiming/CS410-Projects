@@ -254,7 +254,7 @@ Moreover, early-stop is also implemented in A* algorithm, allowing the alignment
 | Algorithm           | Result (cost of alignment) | Running Time                                                 |
 | ------------------- | -------------------------- | ------------------------------------------------------------ |
 | Dynamic Programming | ①: 290<br />②: 122<br />   | ①: ~20h (Python),  4min59s (C++)<br />②: ~20h (Python),  4min38s (C++)<br /> |
-| A-star (A*)         | ①: 290<br />②: 122<br />   | ①: >20h (Python), ~6h (C++), 20min41s (C++, with early-stop)<br />②: >20h (Python), ~6h (C++), 24min1s (C++, with early-stop)<br /> |
+| A-star (A*)         | ①: 290<br />②: 122<br />   | ①: ~20h (Python), 3.77s (C++, with early-stop)<br />②: ~20h (Python), 2.21s (C++, with early-stop)<br /> |
 | Genetic Algorithm   | ①: 609<br />②: 600<br />   | ①: 2min45s<br />②: 55.67s<br />                              |
 
 **The alignment of each query found by each algorithm:**
@@ -282,11 +282,13 @@ Moreover, early-stop is also implemented in A* algorithm, allowing the alignment
 
 1. DP and A* search are both optimal algorithm that can find the same optimal solution, while GA may not be able to find the optimal solution in limited time.
 
-2. As for the 2, 3-seq alignment, DP performs much better than A* search.
+2. As for the 2, 3-seq alignment, DP performs better than the common A* search.
 
     The reason is that the time complexity of DP is $O(n)$ while the upper bound of time complexity of A* is $O(nlog n)$. This means that if the heuristic function is not able to reduce the amount of nodes needed to be visited during the searching procedure, the $log n$ factor may pose large influence. 
 
     This phenomenon is common when the dimension is low. However, when the dimension is larger than $4$, A* algorithm will significantly outperforms DP, this conclusion is proved in the reference paper: *Comparing Best-First Search and Dynamic Programming for Optimal Multiple  Sequence Alignment*
+    
+    **However, in this project, a method called Early-stop is used**, meaning that the algorithm will be terminated when the cost of the current alignment is larger than the currently optimal cost. With Early-stop, the A* algorithm executes significantly faster and outperforms DP and GA by a very large extent (A* only needs ~3s to find the optimal solution while DP needs ~5min).
 
 ## Supplementary
 

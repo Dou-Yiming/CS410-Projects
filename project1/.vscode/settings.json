@@ -9,7 +9,8 @@
         "ostream": "cpp",
         "queue": "cpp",
         "deque": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "xstddef": "cpp"
     },
     "jupyter.jupyterServerType": "local"
 }

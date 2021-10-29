@@ -86,7 +86,7 @@ int min(int a[3])
     return a[2] < tmp ? a[2] : tmp;
 }
 
-int align_2_seq(string X, string Y, int delta)
+vector<vector<int>> align_2_seq(string X, string Y, int delta)
 {
     int m = X.length(), n = Y.length();
     vector<vector<int>> dp(m + 1);
@@ -108,30 +108,19 @@ int align_2_seq(string X, string Y, int delta)
             };
             dp[i][j] = min(cand);
         }
-    return dp[m][n];
+    return dp;
 }
 
 res align_3_seq(string X, string Y, string Z, int delta, res final_res)
 {
-    // pre-compute as heuristic function
+    int t1, t2;
     int m = int(X.length()), n = int(Y.length()), o = int(Z.length());
-    vector<vector<int>> matXY(m + 1), matYZ(n + 1), matXZ(m + 1);
-    for (int i = 0; i <= m; ++i)
-    {
-        matXY[i].resize(n + 1);
-        matXZ[i].resize(o + 1);
-    }
-    for (int i = 0; i <= n; ++i)
-        matYZ[i].resize(o + 1);
-    for (int i = 0; i <= m; ++i)
-        for (int j = 0; j <= n; ++j)
-            matXY[i][j] = align_2_seq(X.substr(i, m), Y.substr(j, n), delta);
-    for (int i = 0; i <= m; ++i)
-        for (int j = 0; j <= o; ++j)
-            matXZ[i][j] = align_2_seq(X.substr(i, m), Z.substr(j, o), delta);
-    for (int i = 0; i <= n; ++i)
-        for (int j = 0; j <= o; ++j)
-            matYZ[i][j] = align_2_seq(Y.substr(i, n), Z.substr(j, o), delta);
+    reverse(X.begin(), X.end()), reverse(Y.begin(), Y.end()), reverse(Z.begin(), Z.end());
+    vector<vector<int>> matXY = align_2_seq(X, Y, delta);
+    vector<vector<int>> matYZ = align_2_seq(Y, Z, delta);
+    vector<vector<int>> matXZ = align_2_seq(X, Z, delta);
+    // 3-seq
+    reverse(X.begin(), X.end()), reverse(Y.begin(), Y.end()), reverse(Z.begin(), Z.end());
     int goal[3] = {m, n, o};
     priority_queue<Node, vector<Node>, greater<Node>> open_list;
 
@@ -145,9 +134,7 @@ res align_3_seq(string X, string Y, string Z, int delta, res final_res)
         if (head.f >= final_res.cost) // early stop
             return res();
         open_list.pop();
-        vector<int> pos;
-        for (int i = 0; i < 3; ++i)
-            pos.push_back(head.pos[i]);
+        vector<int> pos = {head.pos[0], head.pos[1], head.pos[2]};
         if (find(closed_list.begin(), closed_list.end(), pos) != closed_list.end())
             continue;
         else
@@ -188,7 +175,7 @@ res align_3_seq(string X, string Y, string Z, int delta, res final_res)
                              alpha(
                                  Y[p1], Z[p2]) +
                              alpha(X[p0], Z[p2]);
-                h = matXY[p0 + 1][p1 + 1] + matXZ[p0 + 1][p2 + 1] + matYZ[p1 + 1][p2 + 1];
+                h = matXY[m-(p0 + 1)][n-(p1 + 1)] + matXZ[m-(p0 + 1)][o-(p2 + 1)] + matYZ[n-(p1 + 1)][o-(p2 + 1)];
                 q = head.query + X[p0];
                 s1 = head.seq1 + Y[p1];
                 s2 = head.seq2 + Z[p2];
@@ -198,7 +185,7 @@ res align_3_seq(string X, string Y, string Z, int delta, res final_res)
                 cost_added = alpha(
                                  X[p0], Y[p1]) +
                              2 * delta;
-                h = matXY[p0 + 1][p1 + 1] + matXZ[p0 + 1][p2] + matYZ[p1 + 1][p2];
+                h = matXY[m-(p0 + 1)][n-(p1 + 1)] + matXZ[m-(p0 + 1)][o-p2] + matYZ[n-(p1 + 1)][o-p2];
                 q = head.query + X[p0];
                 s1 = head.seq1 + Y[p1];
                 s2 = head.seq2 + "-";
@@ -208,7 +195,7 @@ res align_3_seq(string X, string Y, string Z, int delta, res final_res)
                 cost_added = alpha(
                                  X[p0], Z[p2]) +
                              2 * delta;
-                h = matXY[p0 + 1][p1] + matXZ[p0 + 1][p2 + 1] + matYZ[p1][p2 + 1];
+                h = matXY[m-(p0 + 1)][n-p1] + matXZ[m-(p0 + 1)][o-(p2 + 1)] + matYZ[n-p1][o-(p2 + 1)];
                 q = head.query + X[p0];
                 s1 = head.seq1 + "-";
                 s2 = head.seq2 + Z[p2];
@@ -218,7 +205,7 @@ res align_3_seq(string X, string Y, string Z, int delta, res final_res)
                 cost_added = alpha(
                                  Y[p1], Z[p2]) +
                              2 * delta;
-                h = matXY[p0][p1 + 1] + matXZ[p0][p2 + 1] + matYZ[p1 + 1][p2 + 1];
+                h = matXY[m-p0][n-(p1 + 1)] + matXZ[m-p0][o-(p2 + 1)] + matYZ[n-(p1 + 1)][o-(p2 + 1)];
                 q = head.query + "-";
                 s1 = head.seq1 + Y[p1];
                 s2 = head.seq2 + Z[p2];
@@ -226,7 +213,7 @@ res align_3_seq(string X, string Y, string Z, int delta, res final_res)
             else if (l == 4)
             {
                 cost_added = 2 * delta;
-                h = matXY[p0 + 1][p1] + matXZ[p0 + 1][p2] + matYZ[p1][p2];
+                h = matXY[m-(p0 + 1)][n-p1] + matXZ[m-(p0 + 1)][o-p2] + matYZ[n-p1][o-p2];
                 q = head.query + X[p0];
                 s1 = head.seq1 + "-";
                 s2 = head.seq2 + "-";
@@ -234,7 +221,7 @@ res align_3_seq(string X, string Y, string Z, int delta, res final_res)
             else if (l == 5)
             {
                 cost_added = 2 * delta;
-                h = matXY[p0][p1 + 1] + matXZ[p0][p2] + matYZ[p1 + 1][p2];
+                h = matXY[m-p0][n-(p1 + 1)] + matXZ[m-p0][o-p2] + matYZ[n-(p1 + 1)][o-p2];
                 q = head.query + "-";
                 s1 = head.seq1 + Y[p1];
                 s2 = head.seq2 + "-";
@@ -242,7 +229,7 @@ res align_3_seq(string X, string Y, string Z, int delta, res final_res)
             else if (l == 6)
             {
                 cost_added = 2 * delta;
-                h = matXY[p0][p1] + matXZ[p0][p2 + 1] + matYZ[p1][p2 + 1];
+                h = matXY[m-p0][n-p1] + matXZ[m-p0][o-(p2 + 1)] + matYZ[n-p1][o-(p2 + 1)];
                 q = head.query + "-";
                 s1 = head.seq1 + "-";
                 s2 = head.seq2 + Z[p2];
@@ -289,5 +276,6 @@ int main()
     cout << final_res.v1 << endl;
     cout << final_res.v2 << endl;
     clock_t timer_end = clock();
+    printf("Final cost: %d\n", final_res.cost);
     cout << "Running time: " << (timer_end - timer_start) * 1000 / CLOCKS_PER_SEC << "ms" << endl;
 }
