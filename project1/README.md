@@ -188,7 +188,6 @@ T_{opt}=O(G\times[P\times L_{seq}+(P\times logP+P^2)+P\times L_g])
 $$
 
 - When $P$ is relatively large, $T_{opt}=O(G\times P^2)$
-- When $E$ is relatively large, $T_{opt}=O(P\times E)$
 - When $L_g$ is relatively large, $T_{opt}=O(P\times L_{g})$
 
 ## Results & Running time
