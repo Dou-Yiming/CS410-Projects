@@ -10,7 +10,7 @@ In this document, the implementation, results, running time and time complexity 
 
 DP algorithm can be regarded as searching on a $k$-dimensional space, and the $2$-dim situation can be illustrated in the following picture:
 
-<img src="D:\OneDrive - sjtu.edu.cn\大三上\人工智能\Projects\project1\README.assets\image-20211004155158303.png" alt="image-20211004155158303" style="zoom:50%;" />
+<img src=".\figure\image-20211004155158303.png" alt="image-20211004155158303" style="zoom:50%;" />
 
 In this situation, the element of the dp can be computed by:$dp[i][j]=min(dp[i-1][j-1]+\alpha_{x_i,y_j},dp[i-1][j]+\delta,dp[i][j-1]+\delta)$
 
