@@ -130,3 +130,4 @@ dmypy.json
 
 *.exe
 /submit/*
+/project2/code_base/DATA/

@@ -53,8 +53,8 @@ if __name__ == '__main__':
     cfg = get_config('../config/default.json')
     data_loader = Data_loader(cfg)
 
-    # run_dynamic_programming(cfg, data_loader)
+    run_dynamic_programming(cfg, data_loader)
 
-    # run_Astar(cfg, data_loader)
+    run_Astar(cfg, data_loader)
 
     run_genetic_algorithm(cfg, data_loader)
