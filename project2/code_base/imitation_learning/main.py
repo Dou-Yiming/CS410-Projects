@@ -25,7 +25,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='n-gram language model')
     parser.add_argument('--data_path', dest='data_path',
                         help='path of dataset',
-                        default='./DATA/top/', type=str)
+                        default='E:/Datasets/LUX_ai/DATA/top/', type=str)
     parser.add_argument('--config_path', dest='config_path',
                         help='path of config',
                         default='./configs/default.yml', type=str)

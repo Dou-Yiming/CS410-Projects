@@ -3,9 +3,8 @@ import numpy as np
 import torch
 from lux.game import Game
 
-
 path = '/kaggle_simulations/agent' if os.path.exists('/kaggle_simulations') else '.'
-model = torch.jit.load(f'{path}/model_top.pth')
+model = torch.jit.load(f'{path}/model.pth')
 model.eval()
 
 
@@ -141,6 +140,7 @@ def agent(observation, configuration):
     
     # Worker Actions
     dest = []
+    model.cur_obs_id=-1.
     for unit in player.units:
         if unit.can_act() and (game_state.turn % 40 < 30 or not in_city(unit.pos)):
             state = make_input(observation, unit.id)
@@ -152,5 +152,6 @@ def agent(observation, configuration):
             action, pos = get_action(policy, unit, dest)
             actions.append(action)
             dest.append(pos)
+            
 
     return actions

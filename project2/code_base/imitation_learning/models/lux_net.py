@@ -31,20 +31,24 @@ class BasicConv2d(nn.Module):
 class LuxNet(nn.Module):
     def __init__(self):
         super().__init__()
-        layers, filters = 12, 64
+        layers, filters = 12, 32
         self.conv0 = BasicConv2d(20, filters, (3, 3), True)
         self.blocks = nn.ModuleList([BasicConv2d(filters, filters, (3, 3), True) for _ in range(layers)])
-        self.l1 = nn.Linear(filters, filters//2, bias=True)
-        self.l2 = nn.Linear(filters//2, 5, bias=False)
+        self.l1 = nn.Linear(filters*1024, 1024, bias=True)
+        self.l2 = nn.Linear(1024, 128, bias=True)
+        self.l3 = nn.Linear(128, 5, bias=False)
         self.dropout = nn.Dropout()
         
 
     def forward(self, x):
-        h = F.relu_(self.conv0(x))
+        h = F.leaky_relu_(self.conv0(x))
         for block in self.blocks:
-            h = F.relu_(h + block(h))
-        h_head = (h * x[:,:1]).view(h.size(0), h.size(1), -1).sum(-1)
-        h_head = F.relu_(self.l1(h_head))
+            h = F.leaky_relu_(h + block(h))
+        h_head = (h * x[:,:1]).view(h.size(0), h.size(1), -1)
+        h_head = torch.flatten(h_head, start_dim=1, end_dim=-1)
+        h_head = F.leaky_relu_(self.l1(h_head))
         h_head = self.dropout(h_head)
-        p = self.l2(h_head)
+        h_head = F.leaky_relu_(self.l2(h_head))
+        h_head = self.dropout(h_head)
+        p = self.l3(h_head)
         return p
