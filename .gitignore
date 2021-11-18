@@ -130,4 +130,6 @@ dmypy.json
 
 *.exe
 /submit/*
-/project2/code_base/DATA/
+/project2/code_base/DATA/100W/*
+/project2/code_base/DATA/300W/*
+/project2/code_base/DATA/top/*

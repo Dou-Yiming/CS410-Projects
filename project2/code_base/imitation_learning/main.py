@@ -12,6 +12,7 @@ from torch import nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 import torch.optim as optim
+from torch.optim import lr_scheduler
 from sklearn.model_selection import train_test_split
 
 from utils.utils import seed_everything, create_dataset_from_json
@@ -24,7 +25,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='n-gram language model')
     parser.add_argument('--data_path', dest='data_path',
                         help='path of dataset',
-                        default='./DATA/', type=str)
+                        default='./DATA/top/', type=str)
     parser.add_argument('--config_path', dest='config_path',
                         help='path of config',
                         default='./configs/default.yml', type=str)
@@ -65,10 +66,19 @@ def main(args, cfg):
     )
     dataloaders_dict = {"train": train_loader, "val": val_loader}
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.AdamW(
-        model.parameters(), lr=cfg.TRAIN.OPTIMIZER.BASE_LR)
-    
-    train_model(model, dataloaders_dict, criterion, optimizer, num_epochs=cfg.TRAIN.MAX_EPOCH)
+    optimizer = optim.AdamW(
+        model.parameters(), lr=cfg.TRAIN.OPTIMIZER.BASE_LR, weight_decay=1e-7)
+    t_0 = len(train)//cfg.TRAIN.BATCH_SIZE*2
+    scheduler = lr_scheduler.CosineAnnealingWarmRestarts(
+        optimizer,
+        T_0=t_0,
+        T_mult=2,
+        eta_min=cfg.TRAIN.OPTIMIZER.MIN_LR,
+        verbose=False)
+
+    train_model(model, dataloaders_dict, criterion,
+                optimizer, scheduler,
+                num_epochs=cfg.TRAIN.MAX_EPOCH)
 
 
 if __name__ == '__main__':

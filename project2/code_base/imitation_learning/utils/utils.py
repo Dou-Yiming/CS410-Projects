@@ -46,7 +46,8 @@ def depleted_resources(obs):
     return True
 
 
-def create_dataset_from_json(episode_dir, team_name='Toad Brigade'): 
+def create_dataset_from_json(episode_dir, 
+                             team_name='Toad Brigade'): 
     print('Loading data...')
     obses = {}
     samples = []
