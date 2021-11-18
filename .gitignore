@@ -130,4 +130,3 @@ dmypy.json
 
 *.exe
 /submit/*
-/project2/code_base/imitation_learning/saved_models/

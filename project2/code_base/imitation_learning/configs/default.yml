@@ -1,8 +1,8 @@
 TRAIN:
   OPTIMIZER:
-    BASE_LR: 1.e-3
+    BASE_LR: 2.e-4
     MIN_LR: 1.e-5
-  BATCH_SIZE: 512
+  BATCH_SIZE: 128
   MAX_EPOCH: 500
 
 

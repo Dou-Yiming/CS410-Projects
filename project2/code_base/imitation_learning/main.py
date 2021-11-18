@@ -18,6 +18,7 @@ from sklearn.model_selection import train_test_split
 from utils.utils import seed_everything, create_dataset_from_json
 from dataset.lux_dataset import LuxDataset
 from models.lux_net import LuxNet
+from models.lux_net_transformer import LuxNetTransformer
 from tools.train import train_model
 
 
@@ -50,6 +51,7 @@ def main(args, cfg):
     labels = [sample[-1] for sample in samples]
 
     model = LuxNet()
+    # model = LuxNetTransformer()
     train, val = train_test_split(
         samples, test_size=0.1, random_state=args.seed, stratify=labels)
     train_loader = DataLoader(

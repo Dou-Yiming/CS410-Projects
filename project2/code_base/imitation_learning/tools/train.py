@@ -20,7 +20,7 @@ def train_model(model, dataloaders_dict, criterion, optimizer, scheduler, num_ep
     for epoch in range(num_epochs):
         model.cuda()
         
-        for phase in ['train', 'val']:
+        for phase in ['train','val']:
             if phase == 'train':
                 model.train()
             else:
@@ -44,9 +44,9 @@ def train_model(model, dataloaders_dict, criterion, optimizer, scheduler, num_ep
                     if phase == 'train':
                         loss.backward()
                         optimizer.step()
-                        scheduler.step()
-                    if i % 100==0:
-                        print("iter: {}, loss: {:.4f}".format(i,loss.item()))
+                        # scheduler.step()
+                    # if i % 100==0:
+                    #     print("iter: {}, loss: {:.4f}".format(i,loss.item()))
 
                     epoch_loss += loss.item() * len(policy)
                     epoch_acc += torch.sum(preds == actions.data)
@@ -59,6 +59,7 @@ def train_model(model, dataloaders_dict, criterion, optimizer, scheduler, num_ep
         
         if epoch_acc > best_acc:
             print("Best Score reached, saving model...")
+            model.eval()
             traced = torch.jit.trace(model.cpu(), torch.rand(1, 20, 32, 32))
             traced.save('./saved_models/model.pth')
             best_acc = epoch_acc

@@ -38,6 +38,9 @@ class LuxNet(nn.Module):
         self.l2 = nn.Linear(1024, 128, bias=True)
         self.l3 = nn.Linear(128, 5, bias=False)
         self.dropout = nn.Dropout()
+        # Transformer
+        encoder_layer = nn.TransformerEncoderLayer(d_model=1024, nhead=4)
+        self.encoder = nn.TransformerEncoder(encoder_layer, num_layers=4)
         
 
     def forward(self, x):
@@ -45,7 +48,13 @@ class LuxNet(nn.Module):
         for block in self.blocks:
             h = F.leaky_relu_(h + block(h))
         h_head = (h * x[:,:1]).view(h.size(0), h.size(1), -1)
-        h_head = torch.flatten(h_head, start_dim=1, end_dim=-1)
+        
+        h_head = torch.transpose(torch.flatten(h_head, 2, -1), 0, 1)
+        h_head = self.encoder(h_head) # (32, bs, 1024)
+        h_head = torch.transpose(h_head, 0, 1) # (bs, 32, 1024)
+        h_head = torch.flatten(h_head, 1, -1) # (bs, 32*1024)
+        
+        # h_head = torch.flatten(h_head, start_dim=1, end_dim=-1)
         h_head = F.leaky_relu_(self.l1(h_head))
         h_head = self.dropout(h_head)
         h_head = F.leaky_relu_(self.l2(h_head))
