@@ -47,7 +47,8 @@ def depleted_resources(obs):
 
 
 def create_dataset_from_json(episode_dir, 
-                             team_name='Toad Brigade'): 
+                             team_name=['Toad Brigade',
+                                        'RL is all you need']):
     print('Loading data...')
     obses = {}
     samples = []
@@ -60,7 +61,7 @@ def create_dataset_from_json(episode_dir,
 
         ep_id = json_load['info']['EpisodeId']
         index = np.argmax([r or 0 for r in json_load['rewards']])
-        if json_load['info']['TeamNames'][index] != team_name:
+        if not json_load['info']['TeamNames'][index] in team_name:
             continue
 
         for i in range(len(json_load['steps'])-1):

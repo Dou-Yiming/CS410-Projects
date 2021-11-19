@@ -44,7 +44,7 @@ def train_model(model, dataloaders_dict, criterion, optimizer, scheduler, num_ep
                     if phase == 'train':
                         loss.backward()
                         optimizer.step()
-                        # scheduler.step()
+                        scheduler.step()
                     # if i % 100==0:
                     #     print("iter: {}, loss: {:.4f}".format(i,loss.item()))
 

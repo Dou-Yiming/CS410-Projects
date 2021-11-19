@@ -4,7 +4,7 @@ import torch
 from lux.game import Game
 
 path = '/kaggle_simulations/agent' if os.path.exists('/kaggle_simulations') else '.'
-model = torch.jit.load(f'{path}/model.pth')
+model = torch.jit.load(f'{path}/model_top.pth')
 model.eval()
 
 
@@ -109,7 +109,19 @@ def call_func(obj, method, args=[]):
 
 
 unit_actions = [('move', 'n'), ('move', 's'), ('move', 'w'), ('move', 'e'), ('build_city',)]
-def get_action(policy, unit, dest):
+def get_action(policy, unit, dest, observation, state):
+    # force go back before night
+    # player = game_state.players[observation.player] # get player
+    # closest_city_tile, dist = find_closest_city_tile(unit.pos, player) # get closest city & dist
+    # if (closest_city_tile is not None) and\
+    #     (dist == (30-observation['step'] % 40)) and\
+    #         (not np.argsort(policy)[::-1]==4):
+    #     dir=unit.pos.direction_to(closest_city_tile.pos)
+    #     act = unit.move(dir)
+    #     pos = unit.pos.translate(dir, 1) or unit.pos
+    #     if pos not in dest or in_city(pos):
+    #         return act, pos
+        
     for label in np.argsort(policy)[::-1]:
         act = unit_actions[label]
         pos = unit.pos.translate(act[-1], 1) or unit.pos
@@ -149,7 +161,7 @@ def agent(observation, configuration):
 
             policy = p.squeeze(0).numpy()
 
-            action, pos = get_action(policy, unit, dest)
+            action, pos = get_action(policy, unit, dest, observation, state)
             actions.append(action)
             dest.append(pos)
             

@@ -26,7 +26,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description='n-gram language model')
     parser.add_argument('--data_path', dest='data_path',
                         help='path of dataset',
-                        default='E:/Datasets/LUX_ai/DATA/top/', type=str)
+                        # default='E:/Datasets/LUX_ai/DATA/top/', type=str)
+                        default='E:/Datasets/LUX_ai/DATA/2M/', type=str)
     parser.add_argument('--config_path', dest='config_path',
                         help='path of config',
                         default='./configs/default.yml', type=str)
@@ -50,8 +51,8 @@ def main(args, cfg):
     print('obs:', len(obses), 'sample:', len(samples))
     labels = [sample[-1] for sample in samples]
 
-    model = LuxNet()
-    # model = LuxNetTransformer()
+    model = LuxNet(cfg=cfg.MODEL)
+    # model=LuxNetTransformer()
     train, val = train_test_split(
         samples, test_size=0.1, random_state=args.seed, stratify=labels)
     train_loader = DataLoader(
@@ -69,7 +70,7 @@ def main(args, cfg):
     dataloaders_dict = {"train": train_loader, "val": val_loader}
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(
-        model.parameters(), lr=cfg.TRAIN.OPTIMIZER.BASE_LR, weight_decay=1e-7)
+        model.parameters(), lr=cfg.TRAIN.OPTIMIZER.BASE_LR, weight_decay=0)
     t_0 = len(train)//cfg.TRAIN.BATCH_SIZE*2
     scheduler = lr_scheduler.CosineAnnealingWarmRestarts(
         optimizer,
