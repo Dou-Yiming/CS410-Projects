@@ -11,6 +11,7 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
 import torch.optim as optim
 from sklearn.model_selection import train_test_split
+from pprint import pprint
 
 
 class BasicConv2d(nn.Module):
@@ -37,24 +38,23 @@ class LuxNet(nn.Module):
         self.conv_blocks = nn.ModuleList(
             [BasicConv2d(filters, filters, (3, 3), True) for _ in range(layers)])
         self.bottle_neck = nn.Sequential(
-            BasicConv2d(filters, filters//2, (3, 3), True),
-            nn.BatchNorm2d(filters//2),
+            BasicConv2d(filters, filters//2, (5, 5), True),
             nn.LeakyReLU(inplace=True),
-            BasicConv2d(filters//2, filters//8, (3, 3), True),
-            nn.BatchNorm2d(filters//8),
+            BasicConv2d(filters//2, filters//4, (5, 5), True),
             nn.LeakyReLU(inplace=True),
         )
         self.linear = nn.Sequential(
-            nn.Linear(filters+filters//8, cfg.LINEAR.DIM[0], bias=True),
+            nn.Linear(filters+filters//4, cfg.LINEAR.DIM[0], bias=True),
             nn.LeakyReLU(inplace=True),
-            # nn.Dropout(),
+            nn.Dropout(),
             nn.Linear(cfg.LINEAR.DIM[0], cfg.LINEAR.DIM[1], bias=True),
             nn.LeakyReLU(inplace=True),
-            # nn.Dropout(),
+            nn.Dropout(),
             nn.Linear(cfg.LINEAR.DIM[1], 5, bias=False)
         )
 
     def forward(self, x):
+        print("city: {} {}".format(np.where(np.array(x[0][10].cpu())>0)[0].shape,np.where(np.array(x[0][10].cpu())>0)[1].shape))
         h = F.leaky_relu_(self.conv0(x))
         for block in self.conv_blocks:
             h = F.leaky_relu_(h + block(h))

@@ -45,8 +45,6 @@ def train_model(model, dataloaders_dict, criterion, optimizer, scheduler, num_ep
                         loss.backward()
                         optimizer.step()
                         scheduler.step()
-                    # if i % 100==0:
-                    #     print("iter: {}, loss: {:.4f}".format(i,loss.item()))
 
                     epoch_loss += loss.item() * len(policy)
                     epoch_acc += torch.sum(preds == actions.data)

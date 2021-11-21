@@ -12,6 +12,8 @@ import torch.optim as optim
 from sklearn.model_selection import train_test_split
 
 # seed
+
+
 def seed_everything(seed_value):
     random.seed(seed_value)
     np.random.seed(seed_value)
@@ -23,9 +25,8 @@ def seed_everything(seed_value):
         torch.cuda.manual_seed_all(seed_value)
         torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = True
-        
 
-        
+
 # dataset
 def to_label(action):
     strs = action.split(' ')
@@ -46,40 +47,41 @@ def depleted_resources(obs):
     return True
 
 
-def create_dataset_from_json(episode_dir, 
+def create_dataset_from_json(episode_dir,
                              team_name=['Toad Brigade',
                                         'RL is all you need']):
     print('Loading data...')
     obses = {}
     samples = []
     append = samples.append
-    
-    episodes = [path for path in Path(episode_dir).glob('*.json') if 'output' not in path.name]
-    for filepath in tqdm(episodes): 
+
+    episodes = [path for path in Path(episode_dir).glob(
+        '*.json') if 'output' not in path.name]
+    for filepath in tqdm(episodes[0:50]):
         with open(filepath) as f:
             json_load = json.load(f)
 
         ep_id = json_load['info']['EpisodeId']
         index = np.argmax([r or 0 for r in json_load['rewards']])
-        if not json_load['info']['TeamNames'][index] in team_name:
+        if not json_load['info']['TeamNames'][index] in team_name: # TeamName
             continue
 
-        for i in range(len(json_load['steps'])-1):
+        for i in range(len(json_load['steps']) - 1):
             if json_load['steps'][i][index]['status'] == 'ACTIVE':
                 actions = json_load['steps'][i+1][index]['action']
                 obs = json_load['steps'][i][0]['observation']
-                
+
                 if depleted_resources(obs):
                     break
-                
+
                 obs['player'] = index
                 obs = dict([
-                    (k,v) for k,v in obs.items() 
+                    (k, v) for k, v in obs.items()
                     if k in ['step', 'updates', 'player', 'width', 'height']
                 ])
                 obs_id = f'{ep_id}_{i}'
                 obses[obs_id] = obs
-                                
+
                 for action in actions:
                     unit_id, label = to_label(action)
                     if label is not None:

@@ -25,6 +25,7 @@ def make_input(obs, unit_id):
         input_identifier = strs[0]
 
         if input_identifier == 'u':
+            # [u 1 2 unit_id x y cooldown wood coal uranium ]
             x = int(strs[4]) + x_shift
             y = int(strs[5]) + y_shift
             wood = int(strs[7])
