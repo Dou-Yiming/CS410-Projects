@@ -18,7 +18,6 @@ from sklearn.model_selection import train_test_split
 from utils.utils import seed_everything, create_dataset_from_json
 from dataset.lux_dataset import LuxDataset
 from models.lux_net import LuxNet
-from models.lux_net_transformer import LuxNetTransformer
 from tools.train import train_model
 
 
@@ -59,25 +58,25 @@ def main(args, cfg):
         LuxDataset(obses, train),
         batch_size=cfg.TRAIN.BATCH_SIZE,
         shuffle=True,
-        num_workers=0
+        num_workers=4
     )
     val_loader = DataLoader(
         LuxDataset(obses, val),
         batch_size=cfg.TEST.BATCH_SIZE,
         shuffle=False,
-        num_workers=0
+        num_workers=4
     )
     dataloaders_dict = {"train": train_loader, "val": val_loader}
+    print("Data loaded Train: {}, Val: {}".format(len(train_loader), len(val_loader)))
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(
-        model.parameters(), lr=cfg.TRAIN.OPTIMIZER.BASE_LR, weight_decay=0)
-    t_0 = len(train)//cfg.TRAIN.BATCH_SIZE*2
+        model.parameters(), lr=cfg.TRAIN.OPTIMIZER.BASE_LR, weight_decay=1e-8)
+    t_0 = len(train) // cfg.TRAIN.BATCH_SIZE * 2
     scheduler = lr_scheduler.CosineAnnealingWarmRestarts(
         optimizer,
         T_0=t_0,
         T_mult=2,
-        eta_min=cfg.TRAIN.OPTIMIZER.MIN_LR,
-        verbose=False)
+        eta_min=cfg.TRAIN.OPTIMIZER.MIN_LR)
 
     train_model(model, dataloaders_dict, criterion,
                 optimizer, scheduler,

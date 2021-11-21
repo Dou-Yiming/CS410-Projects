@@ -54,7 +54,6 @@ class LuxNet(nn.Module):
         )
 
     def forward(self, x):
-        print("city: {} {}".format(np.where(np.array(x[0][10].cpu())>0)[0].shape,np.where(np.array(x[0][10].cpu())>0)[1].shape))
         h = F.leaky_relu_(self.conv0(x))
         for block in self.conv_blocks:
             h = F.leaky_relu_(h + block(h))
