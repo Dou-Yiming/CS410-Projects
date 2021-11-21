@@ -7,11 +7,14 @@ MODEL:
     NUM_LAYERS: 4
   LINEAR:
     DIM: [32, 16]
+  CKPT: ''
     
 TRAIN:
   OPTIMIZER:
+    TYPE: 'AdamW'
     BASE_LR: 1.e-3
-    MIN_LR: 1.e-5
+  SCHEDULER:
+    MIN_LR: 1.e-6
   BATCH_SIZE: 128
   MAX_EPOCH: 5000
 
