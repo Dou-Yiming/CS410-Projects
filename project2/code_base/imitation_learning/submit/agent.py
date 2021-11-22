@@ -6,7 +6,7 @@ from lux.game_map import Position
 
 path = '/kaggle_simulations/agent' if os.path.exists(
     '/kaggle_simulations') else '.'
-model = torch.jit.load(f'{path}/model_toad.pth')
+model = torch.jit.load(f'{path}/model.pth')
 model.eval()
 
 

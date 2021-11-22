@@ -32,6 +32,9 @@ def parse_args():
     parser.add_argument('--seed', dest='seed',
                         help='seed',
                         default='42', type=int)
+    parser.add_argument('--ckpt', dest='ckpt',
+                        help='path of check point',
+                        default='', type=str)
     args = parser.parse_args()
     return args
 
@@ -48,12 +51,12 @@ def main(args, cfg):
     obses, samples = create_dataset_from_json(args.data_path)
     print('obs:', len(obses), 'sample:', len(samples))
     labels = [sample[-1] for sample in samples]
-
-    if cfg.MODEL.CKPT == '':
+    ckpt = args.ckpt
+    if ckpt == '':
         model = LuxNet(cfg=cfg.MODEL)
     else:
-        print("Loading checkpoint from {}".format(cfg.MODEL.CKPT))
-        model = torch.jit.load(cfg.MODEL.CKPT)
+        print("Loading checkpoint from {}".format(ckpt))
+        model = torch.jit.load(ckpt)
     train, val = train_test_split(
         samples, test_size=0.1, random_state=args.seed, stratify=labels)
     train_loader = DataLoader(

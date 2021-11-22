@@ -4,7 +4,6 @@ MODEL:
     FILTERS: 64
   LINEAR:
     DIM: [32, 16]
-  CKPT: "./saved_models/model_top.pth"
 
 TRAIN:
   OPTIMIZER:
