@@ -57,7 +57,7 @@ def create_dataset_from_json(episode_dir,
 
     episodes = [path for path in Path(episode_dir).glob(
         '*.json') if 'output' not in path.name]
-    for filepath in tqdm(episodes):
+    for filepath in tqdm(episodes[0:3]):
         with open(filepath) as f:
             json_load = json.load(f)
 

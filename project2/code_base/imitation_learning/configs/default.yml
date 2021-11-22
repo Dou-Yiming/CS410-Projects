@@ -6,7 +6,7 @@ MODEL:
     NHEAD: 4
     NUM_LAYERS: 4
   LINEAR:
-    DIM: [32, 16]
+    DIM: [16, 16]
   CKPT: ''
     
 TRAIN:
@@ -15,7 +15,7 @@ TRAIN:
     BASE_LR: 1.e-3
   SCHEDULER:
     MIN_LR: 1.e-6
-  BATCH_SIZE: 128
+  BATCH_SIZE: 256
   MAX_EPOCH: 5000
 
 TEST:

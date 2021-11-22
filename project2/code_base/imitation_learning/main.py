@@ -18,6 +18,7 @@ from sklearn.model_selection import train_test_split
 from utils.utils import seed_everything, create_dataset_from_json
 from dataset.lux_dataset import LuxDataset
 from models.lux_net import LuxNet
+from models.lux_unet import LuxUNet
 from tools.train import train_model
 
 
@@ -25,7 +26,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='n-gram language model')
     parser.add_argument('--data_path', dest='data_path',
                         help='path of dataset',
-                        default='E:/Datasets/LUX_ai/DATA/2M/', type=str)
+                        default='E:/Datasets/LUX_ai/DATA/top/', type=str)
     parser.add_argument('--config_path', dest='config_path',
                         help='path of config',
                         default='./configs/default.yml', type=str)
@@ -53,7 +54,8 @@ def main(args, cfg):
     labels = [sample[-1] for sample in samples]
     ckpt = args.ckpt
     if ckpt == '':
-        model = LuxNet(cfg=cfg.MODEL)
+        # model = LuxNet(cfg=cfg.MODEL)
+        model = LuxUNet(cfg=cfg.MODEL)
     else:
         print("Loading checkpoint from {}".format(ckpt))
         model = torch.jit.load(ckpt)
