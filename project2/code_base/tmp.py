@@ -2,7 +2,7 @@ import os
 from tqdm import tqdm
 import json
 
-for root,dirs,files in os.walk('E:/Datasets/LUX_ai/raw/'):
+for root,dirs,files in os.walk('E:/Datasets/LUX_ai/DATA/top/top'):
     for file in tqdm(files):
         p=os.path.join(root,file)
         if 'episodes' in p:

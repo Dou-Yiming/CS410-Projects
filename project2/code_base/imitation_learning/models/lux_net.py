@@ -44,13 +44,10 @@ class LuxNet(nn.Module):
             nn.LeakyReLU(inplace=True),
         )
         self.linear = nn.Sequential(
-            nn.Linear(filters+filters//4, cfg.LINEAR.DIM[0], bias=True),
+            nn.Linear(filters+filters//4, cfg.LINEAR.DIM, bias=True),
             nn.LeakyReLU(inplace=True),
             nn.Dropout(),
-            nn.Linear(cfg.LINEAR.DIM[0], cfg.LINEAR.DIM[1], bias=True),
-            nn.LeakyReLU(inplace=True),
-            nn.Dropout(),
-            nn.Linear(cfg.LINEAR.DIM[1], 5, bias=False)
+            nn.Linear(cfg.LINEAR.DIM, 5, bias=False)
         )
 
     def forward(self, x):

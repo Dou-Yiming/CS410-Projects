@@ -54,8 +54,8 @@ def main(args, cfg):
     labels = [sample[-1] for sample in samples]
     ckpt = args.ckpt
     if ckpt == '':
-        # model = LuxNet(cfg=cfg.MODEL)
-        model = LuxUNet(cfg=cfg.MODEL)
+        model = LuxNet(cfg=cfg.MODEL)
+        # model = LuxUNet(cfg=cfg.MODEL)
     else:
         print("Loading checkpoint from {}".format(ckpt))
         model = torch.jit.load(ckpt)
@@ -76,11 +76,12 @@ def main(args, cfg):
     dataloaders_dict = {"train": train_loader, "val": val_loader}
     print("Data loaded Train: {}, Val: {}".format(
         len(train_loader), len(val_loader)))
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss(weight=torch.Tensor(
+        [1., 1.00834547, 1.24118228, 1.27421171, 2.07658798]).cuda())
     if cfg.TRAIN.OPTIMIZER.TYPE == 'AdamW':
         optimizer = optim.AdamW(
             model.parameters(), lr=cfg.TRAIN.OPTIMIZER.BASE_LR,
-            weight_decay=1e-8)
+            weight_decay=1e-6)
     else:
         optimizer = optim.SGD(
             model.parameters(), lr=cfg.TRAIN.OPTIMIZER.BASE_LR,
