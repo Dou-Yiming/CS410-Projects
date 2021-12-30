@@ -1,5 +1,5 @@
 *.pdf
-baselines/*
+baselines/
 .vscode/
 tmp.py
 tmp2.py
