@@ -1,11 +1,14 @@
 import numpy as np
 import json
 from easydict import EasyDict as edict
+from torch.utils import data
+from torch.utils.data.sampler import WeightedRandomSampler
 import yaml
 from pathlib import Path
 import os
 import argparse
 import random
+import pickle
 from tqdm.notebook import tqdm
 import torch
 from torch import nn
@@ -20,6 +23,7 @@ from dataset.lux_dataset import LuxDataset
 from models.lux_net import LuxNet
 from models.lux_unet import LuxUNet
 from tools.train import train_model
+from utils.losses import FocalLoss
 
 
 def parse_args():
@@ -46,51 +50,71 @@ def get_config(cfg_path):
     return edict(config)
 
 
+def load_data(data_path):
+    with open(os.path.join(data_path, 'obses.pkl'), 'rb') as f:
+        obses = pickle.load(f)
+    with open(os.path.join(data_path, 'train_top.pkl').format(data_path), 'rb') as f:
+        train = pickle.load(f)
+    with open(os.path.join(data_path, 'val_top.pkl').format(data_path), 'rb') as f:
+        val = pickle.load(f)
+    return obses, train, val
+
+
+loss_dict = {
+    'FocalLoss': FocalLoss(num_class=5, gamma=2),
+    'CrossEntropyLoss': nn.CrossEntropyLoss()
+}
+
+
 def main(args, cfg):
     seed_everything(args.seed)
 
-    obses, samples = create_dataset_from_json(args.data_path)
-    print('obs:', len(obses), 'sample:', len(samples))
-    labels = [sample[-1] for sample in samples]
+    obses, train, val = load_data(args.data_path)
+    print('obs:', len(obses), 'sample:', len(train)+len(val))
+    print("Train: {}, Val: {}".format(len(train), len(val)))
+
+    # load ckpt
     ckpt = args.ckpt
     if ckpt == '':
         model = LuxNet(cfg=cfg.MODEL)
-        # model = LuxUNet(cfg=cfg.MODEL)
     else:
         print("Loading checkpoint from {}".format(ckpt))
         model = torch.jit.load(ckpt)
-    train, val = train_test_split(
-        samples, test_size=0.1, random_state=args.seed, stratify=labels)
+
     train_loader = DataLoader(
         LuxDataset(obses, train),
         batch_size=cfg.TRAIN.BATCH_SIZE,
         shuffle=True,
-        num_workers=0
+        num_workers=8
     )
     val_loader = DataLoader(
         LuxDataset(obses, val),
         batch_size=cfg.TEST.BATCH_SIZE,
         shuffle=False,
-        num_workers=0
+        num_workers=8
     )
     dataloaders_dict = {"train": train_loader, "val": val_loader}
-    print("Data loaded Train: {}, Val: {}".format(
+
+    print("Data loader: Train: {}, Val: {}".format(
         len(train_loader), len(val_loader)))
-    criterion = nn.CrossEntropyLoss(weight=torch.Tensor(
-        [1., 1.00834547, 1.24118228, 1.27421171, 2.07658798]).cuda())
+
+    criterion = loss_dict[cfg.Loss]
     if cfg.TRAIN.OPTIMIZER.TYPE == 'AdamW':
         optimizer = optim.AdamW(
             model.parameters(), lr=cfg.TRAIN.OPTIMIZER.BASE_LR,
-            weight_decay=1e-6)
+            weight_decay=1e-4)
     else:
         optimizer = optim.SGD(
             model.parameters(), lr=cfg.TRAIN.OPTIMIZER.BASE_LR,
-            momentum=0.9, weight_decay=1e-9)
+            momentum=0.9, weight_decay=1e-6)
     scheduler = lr_scheduler.CosineAnnealingWarmRestarts(
         optimizer,
-        T_0=len(train) // cfg.TRAIN.BATCH_SIZE * 2,
+        T_0=len(train) // cfg.TRAIN.BATCH_SIZE * 20,
         T_mult=2,
         eta_min=cfg.TRAIN.SCHEDULER.MIN_LR)
+
+    if cfg.MODEL.PARALLEL:
+        model = nn.DataParallel(model)
 
     train_model(model, dataloaders_dict, criterion,
                 optimizer, scheduler,

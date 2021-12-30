@@ -1,0 +1,6 @@
+*.pdf
+baselines/*
+.vscode/
+tmp.py
+tmp2.py
+submission/

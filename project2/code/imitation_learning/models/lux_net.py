@@ -12,6 +12,7 @@ from torch.utils.data import Dataset, DataLoader
 import torch.optim as optim
 from sklearn.model_selection import train_test_split
 from pprint import pprint
+import ipdb
 
 
 class BasicConv2d(nn.Module):
@@ -44,19 +45,40 @@ class LuxNet(nn.Module):
             nn.LeakyReLU(inplace=True),
         )
         self.linear = nn.Sequential(
-            nn.Linear(filters+filters//4, cfg.LINEAR.DIM, bias=True),
+            nn.Linear(filters + filters//4 + 4, cfg.LINEAR.DIM[0], bias=True),
             nn.LeakyReLU(inplace=True),
             nn.Dropout(),
-            nn.Linear(cfg.LINEAR.DIM, 5, bias=False)
+            nn.Linear(cfg.LINEAR.DIM[0], cfg.LINEAR.DIM[1], bias=True),
+            nn.LeakyReLU(inplace=True),
+            nn.Dropout(p=0.6),
+            nn.Linear(cfg.LINEAR.DIM[1], 5, bias=False)
         )
 
-    def forward(self, x):
+    def forward(self, input):
+        # p = []
+        # for i in range(4):
+        #     x = input[:, i]
+        x=input
         h = F.leaky_relu_(self.conv0(x))
         for block in self.conv_blocks:
             h = F.leaky_relu_(h + block(h))
-        f1 = (h * x[:, :1]).view(h.size(0),h.size(1), -1).sum(-1)  # (bs, filters)
+        f1 = (h * x[:, :1]).view(h.size(0),
+                                    h.size(1), -1).sum(-1)  # (bs, filters)
         h = self.bottle_neck(h)
-        f2 = (h * x[:, :1]).view(h.size(0),h.size(1), -1).sum(-1)  # (bs, filters)
-        f=torch.cat((f1,f2),1)
+        f2 = (h * x[:, :1]).view(h.size(0),
+                                    h.size(1), -1).sum(-1)  # (bs, filters)
+        f3 = self.global_linear(x.mean(dim=2).mean(dim=2)[
+                                :, 16:20])  # (bs, 4)
+        f = torch.cat((f1, f2, f3), 1)
+            # p.append(self.linear(f))
+        # build = torch.mean(torch.cat((p[0][:, 1].unsqueeze(1), p[1][:, 1].unsqueeze(1),
+        #                               p[2][:, 1].unsqueeze(1), p[3][:, 1].unsqueeze(1)), dim=1), dim=1)
+        # build = torch.max(torch.cat((p[0][:, 1].unsqueeze(1), p[1][:, 1].unsqueeze(1),
+        #                               p[2][:, 1].unsqueeze(1), p[3][:, 1].unsqueeze(1)), dim=1), dim=1, keepdim=True)[0]
+        # prob = torch.cat((p[0][:, 0].unsqueeze(1), p[1][:, 0].unsqueeze(1),
+        #                   p[2][:, 0].unsqueeze(1), p[3][:, 0].unsqueeze(1),
+        #                   build), dim=1)
+        # return prob
         p = self.linear(f)
+
         return p

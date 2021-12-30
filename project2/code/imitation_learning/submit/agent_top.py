@@ -2,8 +2,10 @@ import os
 import numpy as np
 import torch
 from lux.game import Game
+from lux.game_map import Position
 
-path = '/kaggle_simulations/agent' if os.path.exists('/kaggle_simulations') else '.'
+path = '/kaggle_simulations/agent' if os.path.exists(
+    '/kaggle_simulations') else '.'
 model = torch.jit.load(f'{path}/model_top.pth')
 model.eval()
 
@@ -13,13 +15,13 @@ def make_input(obs, unit_id):
     x_shift = (32 - width) // 2
     y_shift = (32 - height) // 2
     cities = {}
-    
+
     b = np.zeros((20, 32, 32), dtype=np.float32)
-    
+
     for update in obs['updates']:
         strs = update.split(' ')
         input_identifier = strs[0]
-        
+
         if input_identifier == 'u':
             x = int(strs[4]) + x_shift
             y = int(strs[5]) + y_shift
@@ -64,28 +66,31 @@ def make_input(obs, unit_id):
             # Research Points
             team = int(strs[1])
             rp = int(strs[2])
-            b[15 + (team - obs['player']) % 2, :] = min(rp, 200) / 200
+            b[16 + (team - obs['player']) % 2, :] = min(rp, 200) / 200
         elif input_identifier == 'c':
             # Cities
             city_id = strs[2]
             fuel = float(strs[3])
             lightupkeep = float(strs[4])
             cities[city_id] = min(fuel / lightupkeep, 10) / 10
-    
-    # Day/Night Cycle
-    b[17, :] = obs['step'] % 40 / 40
-    # Turns
-    b[18, :] = obs['step'] / 360
+
+
     # Map Size
-    b[19, x_shift:32 - x_shift, y_shift:32 - y_shift] = 1
+    b[15, x_shift:32 - x_shift, y_shift:32 - y_shift] = 1
+    # Day/Night Cycle
+    b[18, :] = obs['step'] % 40 / 40
+    # Turns
+    b[19, :] = obs['step'] / 360
 
     return b
 
 
 game_state = None
+
+
 def get_game_state(observation):
     global game_state
-    
+
     if observation["step"] == 0:
         game_state = Game()
         game_state._initialize(observation["updates"])
@@ -96,7 +101,7 @@ def get_game_state(observation):
     return game_state
 
 
-def in_city(pos):    
+def in_city(pos):
     try:
         city = game_state.map.get_cell_by_pos(pos).citytile
         return city is not None and city.team == game_state.id
@@ -108,51 +113,47 @@ def call_func(obj, method, args=[]):
     return getattr(obj, method)(*args)
 
 
-unit_actions = [('move', 'n'), ('move', 's'), ('move', 'w'), ('move', 'e'), ('build_city',)]
+unit_actions = [('move', 'n'), ('move', 's'), ('move', 'w'),
+                ('move', 'e'), ('build_city',)]
+
+
 def get_action(policy, unit, dest, observation, state):
-    # force go back before night
-    # player = game_state.players[observation.player] # get player
-    # closest_city_tile, dist = find_closest_city_tile(unit.pos, player) # get closest city & dist
-    # if (closest_city_tile is not None) and\
-    #     (dist == (30-observation['step'] % 40)) and\
-    #         (not np.argsort(policy)[::-1]==4):
-    #     dir=unit.pos.direction_to(closest_city_tile.pos)
-    #     act = unit.move(dir)
-    #     pos = unit.pos.translate(dir, 1) or unit.pos
-    #     if pos not in dest or in_city(pos):
-    #         return act, pos
-        
     for label in np.argsort(policy)[::-1]:
         act = unit_actions[label]
         pos = unit.pos.translate(act[-1], 1) or unit.pos
         if pos not in dest or in_city(pos):
-            return call_func(unit, *act), pos 
-            
+            return call_func(unit, *act), pos
+
     return unit.move('c'), unit.pos
 
 
 def agent(observation, configuration):
     global game_state
-    
-    game_state = get_game_state(observation)    
+
+    game_state = get_game_state(observation)
     player = game_state.players[observation.player]
     actions = []
-    
+
     # City Actions
     unit_count = len(player.units)
     for city in player.cities.values():
         for city_tile in city.citytiles:
             if city_tile.can_act():
-                if unit_count < player.city_tile_count: 
+                if unit_count < player.city_tile_count:
                     actions.append(city_tile.build_worker())
                     unit_count += 1
                 elif not player.researched_uranium():
                     actions.append(city_tile.research())
                     player.research_points += 1
-    
+
     # Worker Actions
     dest = []
-    model.cur_obs_id=-1.
+    # state = make_input(observation, player.units[0].id)
+    # oppo_city = np.where(np.array(state[10]) > 0)
+    # city_num = oppo_city[0].shape[0]
+    # for i in range(city_num):
+    #     dest.append(Position(oppo_city[0][i], oppo_city[1][i]))
+    model.cur_obs_id = -1.
     for unit in player.units:
         if unit.can_act() and (game_state.turn % 40 < 30 or not in_city(unit.pos)):
             state = make_input(observation, unit.id)
@@ -164,6 +165,5 @@ def agent(observation, configuration):
             action, pos = get_action(policy, unit, dest, observation, state)
             actions.append(action)
             dest.append(pos)
-            
 
     return actions

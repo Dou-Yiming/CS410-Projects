@@ -11,8 +11,7 @@ from torch.utils.data import Dataset, DataLoader
 import torch.optim as optim
 from sklearn.model_selection import train_test_split
 
-# seed
-
+import random
 
 def seed_everything(seed_value):
     random.seed(seed_value)
@@ -27,12 +26,12 @@ def seed_everything(seed_value):
         torch.backends.cudnn.benchmark = True
 
 
-# dataset
 def to_label(action):
     strs = action.split(' ')
     unit_id = strs[1]
     if strs[0] == 'm':
         label = {'c': None, 'n': 0, 's': 1, 'w': 2, 'e': 3}[strs[2]]
+        # label = {'c': None, 'n': 0, 'e': 1, 's': 2, 'w': 3}[strs[2]]
     elif strs[0] == 'bcity':
         label = 4
     else:
@@ -51,8 +50,7 @@ def create_dataset_from_json(episode_dir,
                              team_name=['Toad Brigade']):
     print('Loading data...')
     obses = {}
-    samples = []
-    append = samples.append
+    samples=[]
 
     episodes = [path for path in Path(episode_dir).glob(
         '*.json') if 'output' not in path.name]
@@ -84,6 +82,6 @@ def create_dataset_from_json(episode_dir,
                 for action in actions:
                     unit_id, label = to_label(action)
                     if label is not None:
-                        append((obs_id, unit_id, label))
+                        samples.append((obs_id, unit_id, label))
 
     return obses, samples

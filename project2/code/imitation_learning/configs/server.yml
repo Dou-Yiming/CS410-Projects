@@ -1,0 +1,22 @@
+MODEL:
+  CONV:
+    LAYERS: 32
+    FILTERS: 32
+  LINEAR:
+    DIM: [32, 16]
+  # PARALLEL: False
+  PARALLEL: True
+
+TRAIN:
+  OPTIMIZER:
+    TYPE: 'SGD'
+    BASE_LR: 8.e-6
+  SCHEDULER:
+    MIN_LR: 2.e-6
+  BATCH_SIZE: 2048
+  MAX_EPOCH: 20
+
+TEST:
+  BATCH_SIZE: 2048
+
+Loss: "FocalLoss"

@@ -69,6 +69,7 @@ def make_input(obs, unit_id):
             # Research Points
             team = int(strs[1])
             rp = int(strs[2])
+            # b[16 + (team - obs['player']) % 2, :] = min(rp, 200) / 200
             b[15 + (team - obs['player']) % 2, :] = min(rp, 200) / 200
         elif input_identifier == 'c':
             # Cities
@@ -77,6 +78,14 @@ def make_input(obs, unit_id):
             lightupkeep = float(strs[4])
             cities[city_id] = min(fuel / lightupkeep, 10) / 10
 
+    # Map Size
+    # b[15, x_shift:32 - x_shift, y_shift:32 - y_shift] = 1
+    # b[17, x_shift:32 - x_shift, y_shift:32 - y_shift] = 1
+    # # Day/Night Cycle
+    # b[18, :] = obs['step'] % 40 / 40
+    # # Turns
+    # b[19, :] = obs['step'] / 360
+
     # Day/Night Cycle
     b[17, :] = obs['step'] % 40 / 40
     # Turns
@@ -84,6 +93,14 @@ def make_input(obs, unit_id):
     # Map Size
     b[19, x_shift:32 - x_shift, y_shift:32 - y_shift] = 1
 
+    # # rotate 3 times
+    # n = b
+    # e = np.rot90(n, k=1, axes=(1, 2))
+    # s = np.rot90(e, k=1, axes=(1, 2))
+    # w = np.rot90(s, k=1, axes=(1, 2))
+    # res = [n, e, s, w]
+
+    # return np.array(res)
     return b
 
 
