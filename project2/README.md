@@ -2,7 +2,9 @@
 
 This is our solution of the Kaggle [Lux AI Challenge Season 1](https://www.kaggle.com/c/lux-ai-2021).
 
-<img src="./fig/worker.png" alt="img" style="zoom:60%;" />
+
+
+<img src="fig/daynightshift.gif" alt="img" style="zoom:40%;" />
 
 In order to solve the questions above, we take three methods: Rule-based strategy, Reinforcement-learning strategy and Imitation- learning strategy. In short, for each method, we have respectively done the following works:
 
@@ -13,6 +15,8 @@ In order to solve the questions above, we take three methods: Rule-based strateg
 For more details, please refer to our code and the [paper](https://github.com/Dou-Yiming/CS410-Projects/blob/main/project2/report/Group2_AI_report.pdf).
 
 Our final ranking: 115 / 1178 teams.
+
+<img src="./fig/worker.png" alt="img" style="zoom:60%;" />
 
 Group Members:
 
