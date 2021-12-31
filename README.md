@@ -6,6 +6,6 @@ The projects of SJTU-CS410-Artificial Intelligence
 
 [Project Page](https://github.com/Iridoudou/CS410-Projects/tree/main/project1)
 
-#### Project2: Lux AI Challenge
+#### Project2 (Group Project): Lux AI Challenge
 
 [Project Page](https://github.com/Dou-Yiming/CS410-Projects/tree/main/project2)
