@@ -12,6 +12,8 @@ In order to solve the questions above, we take three methods: Rule-based strateg
 
 For more details, please refer to our code and the [paper](https://github.com/Dou-Yiming/CS410-Projects/blob/main/project2/report/Group2_AI_report.pdf).
 
+Our final ranking: 115 / 1178 teams.
+
 Group Members:
 
 - [Yiming Dou](https://github.com/Dou-Yiming)
