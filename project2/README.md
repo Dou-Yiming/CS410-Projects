@@ -4,7 +4,7 @@ This is our solution of the Kaggle [Lux AI Challenge Season 1](https://www.kaggl
 
 
 
-<img src="fig/daynightshift.gif" alt="img" style="zoom:40%;" />
+<img src="fig/daynightshift.gif" alt="img" style="zoom:20%;" />
 
 In order to solve the questions above, we take three methods: Rule-based strategy, Reinforcement-learning strategy and Imitation- learning strategy. In short, for each method, we have respectively done the following works:
 
